@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Courses Doux</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .welcome-subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .title-accent {
+            color: #4f46e5;
+        }
+
+        .user-greeting {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .user-name {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #374151;
+        }
+
+        .tab.active {
+            background: white;
+            color: #4f46e5;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .input-main {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: #f9fafb;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .input-main:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .add-recipe-form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+        }
+
+        .recipe-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .zones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .zone-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .zone-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid;
+            margin-bottom: 1rem;
+        }
+
+        .zone-cold .zone-header {
+            border-color: #dbeafe;
+        }
+
+        .zone-dry .zone-header {
+            border-color: #fef3c7;
+        }
+
+        .zone-icon {
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+        }
+
+        .cold-icon {
+            background: #dbeafe;
+        }
+
+        .dry-icon {
+            background: #fef3c7;
+        }
+
+        .zone-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .zone-count {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .item-cold {
+            background: #eff6ff;
+        }
+
+        .item-cold:hover {
+            background: #dbeafe;
+        }
+
+        .item-dry {
+            background: #fffbeb;
+        }
+
+        .item-dry:hover {
+            background: #fef3c7;
+        }
+
+        .item-purchased {
+            background: #d1fae5;
+            opacity: 0.6;
+        }
+
+        .item-content {
+            display: flex;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-checked {
+            background: #10b981;
+            border-color: #10b981;
+            position: relative;
+        }
+
+        .checkbox-checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: -3px;
+            left: 2px;
+            font-size: 0.875rem;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-name-purchased {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+
+        .recipe-badge {
+            font-size: 0.75rem;
+            background: #f3e8ff;
+            color: #a855f7;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            margin-left: 0.5rem;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .purchased-info {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .btn-delete {
+            color: #ef4444;
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .empty-state {
+            color: #9ca3af;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .recipes-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .recipes-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-card {
+            background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
+            border: 2px solid #f3e8ff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .recipe-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .ingredients-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .ingredients-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ingredient-tag {
+            background: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            border: 1px solid #e9d5ff;
+        }
+
+        .btn-add-ingredients {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-ingredients:hover {
+            background: #4338ca;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .zones-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .add-recipe-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .app-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-card">
+            <h2 class="welcome-title">Bienvenue dans la liste familiale</h2>
+            <p class="welcome-subtitle">Entrez votre prénom pour commencer l'aventure</p>
+            <input type="text" id="userNameInput" class="input" placeholder="Votre prénom">
+            <button class="btn" onclick="setUserName()">C'est parti !</button>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="container hidden">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h1 class="app-title">Mes Courses <span class="title-accent">Doux</span></h1>
+                    <p class="user-greeting">Bonjour, <span class="user-name" id="userName">@User</span> 👋</p>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('liste')">🛒 Liste</button>
+                    <button class="tab" onclick="switchTab('recettes')">👨‍🍳 Recettes</button>
+                </div>
+            </div>
+
+            <!-- Add Item Form -->
+            <div id="addItemForm" class="add-item-form">
+                <input type="text" id="newItem" class="input-main" placeholder="Qu'est-ce qu'on achète ?">
+                <button class="btn-primary" onclick="addItem()">Ajouter</button>
+            </div>
+
+            <!-- Add Recipe Form -->
+            <div id="addRecipeForm" class="add-recipe-form hidden">
+                <input type="text" id="recipeName" class="input-main" placeholder="Nom de la recette...">
+                <div class="recipe-input-group">
+                    <input type="text" id="recipeIngredients" class="input-main" placeholder="Ingrédients (séparés par des virgules)...">
+                    <button class="btn-primary" onclick="addRecipe()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste Tab -->
+        <div id="listeTab" class="zones-grid">
+            <div class="zone-card zone-cold">
+                <div class="zone-header">
+                    <div class="zone-icon cold-icon">❄️</div>
+                    <div>
+                        <h2 class="zone-title">Zone Froid</h2>
+                        <p class="zone-count" id="coldCount">0 article(s)</p>
+                    </div>
+                </div>
+                <div id="coldItems" class="items-list"></div>
+            </div>
+
+            <div class="zone-card zone-dry">
+                <div class="zone-header">
+                    <div class="zone-icon dry-icon">📦</div>
+                    <div>
+                        <h2 class="zone-title">Zone Placard</h2>
+                        <p class="zone-count" id="dryCount">0 article(s)</p>
+                    </div>
+                </div>
+                <div id="dryItems" class="items-list"></div>
+            </div>
+        </div>
+
+        <!-- Recettes Tab -->
+        <div id="recettesTab" class="recipes-section hidden">
+            <h2 class="recipes-title">👨‍🍳 Recettes de la Semaine</h2>
+            <div id="recipesList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        let items = [];
+        let recipes = [];
+        let userName = '';
+        let activeTab = 'liste';
+
+        const coldItems = ['lait', 'beurre', 'fromage', 'yaourt', 'crème', 'viande', 'poisson', 'jambon', 'saumon', 'poulet', 'boeuf', 'porc', 'légumes frais', 'salade', 'tomate', 'concombre', 'carotte', 'fruits frais', 'pomme', 'orange', 'banane', 'raisin', 'fraise'];
+        const dryItems = ['oeufs', 'oeuf', 'pâtes', 'riz', 'farine', 'sucre', 'sel', 'poivre', 'huile', 'vinaigre', 'conserve', 'thon', 'céréales', 'pain', 'biscuit', 'chocolat', 'café', 'thé', 'sauce', 'épices', 'miel', 'confiture'];
+
+        // Load data on start
+        loadData();
+
+        // Functions
+        function loadData() {
+            const savedItems = localStorage.getItem('grocery-items');
+            const savedRecipes = localStorage.getItem('grocery-recipes');
+            
+            if (savedItems) items = JSON.parse(savedItems);
+            if (savedRecipes) recipes = JSON.parse(savedRecipes);
+            
+            renderItems();
+            renderRecipes();
+        }
+
+        function saveData() {
+            localStorage.setItem('grocery-items', JSON.stringify(items));
+            localStorage.setItem('grocery-recipes', JSON.stringify(recipes));
+        }
+
+        function setUserName() {
+            const input = document.getElementById('userNameInput').value.trim();
+            if (input) {
+                userName = input;
+                document.getElementById('userName').textContent = '@' + userName;
+                document.getElementById('welcomeScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+            }
+        }
+
+        function determineZone(itemName) {
+            const lowerName = itemName.toLowerCase();
+            if (coldItems.some(cold => lowerName.includes(cold))) return 'froid';
+            if (dryItems.some(dry => lowerName.includes(dry))) return 'placard';
+            return 'placard';
+        }
+
+        function addItem() {
+            const input = document.getElementById('newItem');
+            const itemName = input.value.trim();
+            
+            if (!itemName || !userName) return;
+
+            const item = {
+                id: Date.now(),
+                name: itemName,
+                zone: determineZone(itemName),
+                addedBy: userName,
+                timestamp: new Date().toLocaleString('fr-FR'),
+                purchased: false,
+                purchasedBy: null,
+                purchasedAt: null
+            };
+
+            items.push(item);
+            input.value = '';
+            saveData();
+            renderItems();
+        }
+
+        function addRecipe() {
+            const nameInput = document.getElementById('recipeName');
+            const ingredientsInput = document.getElementById('recipeIngredients');
+            
+            const name = nameInput.value.trim();
+            const ingredients = ingredientsInput.value.trim();
+            
+            if (!name || !ingredients) return;
+
+            const recipe = {
+                id: Date.now(),
+                name: name,
+                ingredients: ingredients.split(',').map(i => i.trim()).filter(i => i),
+                addedBy: userName,
+                timestamp: new Date().toLocaleString('fr-FR')
+            };
+
+            recipes.push(recipe);
+            nameInput.value = '';
+            ingredientsInput.value = '';
+            saveData();
+            renderRecipes();
+        }
+
+        function togglePurchased(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.purchased = !item.purchased;
+                item.purchasedBy = item.purchased ? userName : null;
+                item.purchasedAt = item.purchased ? new Date().toLocaleString('fr-FR') : null;
+                saveData();
+                renderItems();
+            }
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            saveData();
+            renderItems();
+        }
+
+        function deleteRecipe(id) {
+            recipes = recipes.filter(r => r.id !== id);
+            saveData();
+            renderRecipes();
+        }
+
+        function addIngredientsToList(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            recipe.ingredients.forEach(ingredient => {
+                const item = {
+                    id: Date.now() + Math.random(),
+                    name: ingredient,
+                    zone: determineZone(ingredient),
+                    addedBy: userName,
+                    timestamp: new Date().toLocaleString('fr-FR'),
+                    purchased: false,
+                    purchasedBy: null,
+                    purchasedAt: null,
+                    fromRecipe: recipe.name
+                };
+                items.push(item);
+            });
+
+            saveData();
+            renderItems();
+            switchTab('liste');
+        }
+
+        function renderItems() {
+            const coldZone = items.filter(i => i.zone === 'froid');
+            const dryZone = items.filter(i => i.zone === 'placard');
+
+            document.getElementById('coldCount').textContent = coldZone.length + ' article(s)';
+            document.getElementById('dryCount').textContent = dryZone.length + ' article(s)';
+
+            const coldContainer = document.getElementById('coldItems');
+            const dryContainer = document.getElementById('dryItems');
+
+            coldContainer.innerHTML = coldZone.length === 0 
+                ? '<p class="empty-state">Aucun article</p>'
+                : coldZone.map(item => createItemHTML(item, 'cold')).join('');
+
+            dryContainer.innerHTML = dryZone.length === 0
+                ? '<p class="empty-state">Aucun article</p>'
+                : dryZone.map(item => createItemHTML(item, 'dry')).join('');
+        }
+
+        function createItemHTML(item, type) {
+            return `
+                <div class="item item-${type} ${item.purchased ? 'item-purchased' : ''}">
+                    <div class="item-content">
+                        <div class="checkbox ${item.purchased ? 'checkbox-checked' : ''}" onclick="togglePurchased(${item.id})"></div>
+                        <div class="item-details">
+                            <p class="item-name ${item.purchased ? 'item-name-purchased' : ''}">
+                                ${item.name}
+                                ${item.fromRecipe ? `<span class="recipe-badge">🍳 ${item.fromRecipe}</span>` : ''}
+                            </p>
+                            <p class="item-meta">Ajouté par ${item.addedBy} • ${item.timestamp}</p>
+                            ${item.purchased ? `<p class="purchased-info">✓ Acheté par ${item.purchasedBy} le ${item.purchasedAt}</p>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteItem(${item.id})">🗑️</button>
+                </div>
+            `;
+        }
+
+        function renderRecipes() {
+            const container = document.getElementById('recipesList');
+            
+            if (recipes.length === 0) {
+                container.innerHTML = '<p class="empty-state">Aucune recette planifiée</p>';
+                return;
+            }
+
+            container.innerHTML = recipes.map(recipe => `
+                <div class="recipe-card">
+                    <div class="recipe-header">
+                        <div>
+                            <h3 class="recipe-name">${recipe.name}</h3>
+                            <p class="recipe-meta">Ajouté par ${recipe.addedBy} • ${recipe.timestamp}</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteRecipe(${recipe.id})">🗑️</button>
+                    </div>
+                    <div>
+                        <p class="ingredients-label">Ingrédients :</p>
+                        <div class="ingredients-tags">
+                            ${recipe.ingredients.map(ing => `<span class="ingredient-tag">${ing}</span>`).join('')}
+                        </div>
+                    </div>
+                    <button class="btn-add-ingredients" onclick="addIngredientsToList(${recipe.id})">
+                        🛒 Ajouter à la liste de courses
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide forms and content
+            if (tab === 'liste') {
+                document.getElementById('addItemForm').classList.remove('hidden');
+                document.getElementById('addRecipeForm').classList.add('hidden');
+                document.getElementById('listeTab').classList.remove('hidden');
+                document.getElementById('recettesTab').classList.add('hidden');
+            } else {
+                document.getElementById('addItemForm').classList.add('hidden');
+                document.getElementById('addRecipeForm').classList.remove('hidden');
+                document.getElementById('listeTab').classList.add('hidden');
+                document.getElementById('recettesTab').classList.remove('hidden');
+            }
+        }
+
+        // Enter key support
+        document.getElementById('userNameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') setUserName();
+        });
+
+        document.getElementById('newItem').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addItem();
+        });
+    </script>
+</body>
+</html>
