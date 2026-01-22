@@ -604,14 +604,12 @@
         async function loadData() {
             try {
                 console.log('🔄 Chargement des données...');
-                // Charger les articles
                 const itemsResult = await window.storage.get('grocery-items', true);
                 if (itemsResult && itemsResult.value) {
                     items = JSON.parse(itemsResult.value);
                     console.log('📦 Articles chargés:', items.length);
                 }
 
-                // Charger les recettes
                 const recipesResult = await window.storage.get('grocery-recipes', true);
                 if (recipesResult && recipesResult.value) {
                     recipes = JSON.parse(recipesResult.value);
@@ -847,18 +845,15 @@
             }
         }
 
-        // Auto-refresh pour voir les changements des autres utilisateurs
         let isSaving = false;
         let lastSaveTime = 0;
         setInterval(async () => {
-            // Ne pas rafraîchir si sauvegarde récente (moins de 2 secondes)
             const timeSinceLastSave = Date.now() - lastSaveTime;
             if (!isSaving && timeSinceLastSave > 2000) {
                 await loadData();
             }
-        }, 5000); // Rafraîchit toutes les 5 secondes
+        }, 5000);
 
-        // Enter key support
         document.getElementById('userNameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') setUserName();
         });
@@ -866,30 +861,24 @@
         document.getElementById('newItem').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addItem();
         });
-
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
-  authDomain: "liste-de-course-b82b2.firebaseapp.com",
-  projectId: "liste-de-course-b82b2",
-  storageBucket: "liste-de-course-b82b2.firebasestorage.app",
-  messagingSenderId: "539699514303",
-  appId: "1:539699514303:web:6202aa05293adf07952f0a",
-  measurementId: "G-1BTQBQLFV0"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
     </script>
-</body>
-</html>
+
+    <!-- Firebase (facultatif - utilisé uniquement en dehors de Claude.ai) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
+            authDomain: "liste-de-course-b82b2.firebaseapp.com",
+            projectId: "liste-de-course-b82b2",
+            storageBucket: "liste-de-course-b82b2.firebasestorage.app",
+            messagingSenderId: "539699514303",
+            appId: "1:539699514303:web:6202aa05293adf07952f0a",
+            measurementId: "G-1BTQBQLFV0"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log('🔥 Firebase initialisé');
+    </script>
