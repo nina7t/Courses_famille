@@ -524,7 +524,7 @@
                 <div>
                     <h1 class="app-title">Les Courses <span class="title-accent">de Janvier</span></h1>
                     <p class="user-greeting">Bonjour, <span class="user-name" id="userName">@User</span> 👋</p>
-                    <p class="sync-status">🌐 Données synchronisées avec toute la famille</p>
+                    <p class="sync-status" id="syncStatus">🔄 Connexion à Firebase...</p>
                 </div>
                 
                 <div class="tabs">
@@ -587,8 +587,27 @@
         </div>
     </div>
 
-    <script>
-        // Data
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
+            authDomain: "liste-de-course-b82b2.firebaseapp.com",
+            databaseURL: "https://liste-de-course-b82b2-default-rtdb.firebaseio.com",
+            projectId: "liste-de-course-b82b2",
+            storageBucket: "liste-de-course-b82b2.firebasestorage.app",
+            messagingSenderId: "539699514303",
+            appId: "1:539699514303:web:6202aa05293adf07952f0a",
+            measurementId: "G-1BTQBQLFV0"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log('🔥 Firebase initialisé');
+
+        // Variables globales
         let items = [];
         let recipes = [];
         let userName = '';
@@ -597,51 +616,26 @@
         const coldItems = ['lait', 'beurre', 'fromage', 'yaourt', 'crème', 'viande', 'poisson', 'jambon', 'saumon', 'poulet', 'boeuf', 'porc', 'légumes frais', 'salade', 'tomate', 'concombre', 'carotte', 'fruits frais', 'pomme', 'orange', 'banane', 'raisin', 'fraise'];
         const dryItems = ['oeufs', 'oeuf', 'pâtes', 'riz', 'farine', 'sucre', 'sel', 'poivre', 'huile', 'vinaigre', 'conserve', 'thon', 'céréales', 'pain', 'biscuit', 'chocolat', 'café', 'thé', 'sauce', 'épices', 'miel', 'confiture'];
 
-        // Load data on start
-        loadData();
+        // Écouter les changements en temps réel
+        const itemsRef = ref(database, 'grocery-items');
+        const recipesRef = ref(database, 'grocery-recipes');
 
-        // Functions
-        async function loadData() {
-            try {
-                console.log('🔄 Chargement des données...');
-                const itemsResult = await window.storage.get('grocery-items', true);
-                if (itemsResult && itemsResult.value) {
-                    items = JSON.parse(itemsResult.value);
-                    console.log('📦 Articles chargés:', items.length);
-                }
-
-                const recipesResult = await window.storage.get('grocery-recipes', true);
-                if (recipesResult && recipesResult.value) {
-                    recipes = JSON.parse(recipesResult.value);
-                    console.log('🍳 Recettes chargées:', recipes.length);
-                }
-            } catch (error) {
-                console.log('ℹ️ Première utilisation ou erreur:', error);
-                items = [];
-                recipes = [];
-            }
-            
+        onValue(itemsRef, (snapshot) => {
+            const data = snapshot.val();
+            items = data ? Object.values(data) : [];
+            console.log('📦 Articles mis à jour:', items.length);
             renderItems();
+            document.getElementById('syncStatus').textContent = '🌐 Synchronisé en temps réel';
+        });
+
+        onValue(recipesRef, (snapshot) => {
+            const data = snapshot.val();
+            recipes = data ? Object.values(data) : [];
+            console.log('🍳 Recettes mises à jour:', recipes.length);
             renderRecipes();
-        }
+        });
 
-        async function saveData() {
-            isSaving = true;
-            lastSaveTime = Date.now();
-            try {
-                console.log('💾 Sauvegarde en cours...', {items: items.length, recipes: recipes.length});
-                await window.storage.set('grocery-items', JSON.stringify(items), true);
-                await window.storage.set('grocery-recipes', JSON.stringify(recipes), true);
-                console.log('✅ Sauvegarde réussie!');
-            } catch (error) {
-                console.error('❌ Erreur lors de la sauvegarde:', error);
-                alert('Erreur lors de la sauvegarde. Vos modifications peuvent ne pas être enregistrées.');
-            } finally {
-                isSaving = false;
-            }
-        }
-
-        function setUserName() {
+        window.setUserName = function() {
             const input = document.getElementById('userNameInput').value.trim();
             if (input) {
                 userName = input;
@@ -649,7 +643,7 @@
                 document.getElementById('welcomeScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
             }
-        }
+        };
 
         function determineZone(itemName) {
             const lowerName = itemName.toLowerCase();
@@ -658,7 +652,7 @@
             return 'placard';
         }
 
-        async function addItem() {
+        window.addItem = async function() {
             const input = document.getElementById('newItem');
             const itemName = input.value.trim();
             
@@ -675,13 +669,17 @@
                 purchasedAt: null
             };
 
-            items.push(item);
-            input.value = '';
-            await saveData();
-            renderItems();
-        }
+            try {
+                await set(ref(database, `grocery-items/${item.id}`), item);
+                input.value = '';
+                console.log('✅ Article ajouté');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('Erreur lors de l\'ajout');
+            }
+        };
 
-        async function addRecipe() {
+        window.addRecipe = async function() {
             const nameInput = document.getElementById('recipeName');
             const ingredientsInput = document.getElementById('recipeIngredients');
             
@@ -698,41 +696,55 @@
                 timestamp: new Date().toLocaleString('fr-FR')
             };
 
-            recipes.push(recipe);
-            nameInput.value = '';
-            ingredientsInput.value = '';
-            await saveData();
-            renderRecipes();
-        }
+            try {
+                await set(ref(database, `grocery-recipes/${recipe.id}`), recipe);
+                nameInput.value = '';
+                ingredientsInput.value = '';
+                console.log('✅ Recette ajoutée');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('Erreur lors de l\'ajout');
+            }
+        };
 
-        async function togglePurchased(id) {
+        window.togglePurchased = async function(id) {
             const item = items.find(i => i.id === id);
             if (item) {
                 item.purchased = !item.purchased;
                 item.purchasedBy = item.purchased ? userName : null;
                 item.purchasedAt = item.purchased ? new Date().toLocaleString('fr-FR') : null;
-                await saveData();
-                renderItems();
+                
+                try {
+                    await set(ref(database, `grocery-items/${id}`), item);
+                } catch (error) {
+                    console.error('❌ Erreur:', error);
+                }
             }
-        }
+        };
 
-        async function deleteItem(id) {
-            items = items.filter(i => i.id !== id);
-            await saveData();
-            renderItems();
-        }
+        window.deleteItem = async function(id) {
+            try {
+                await remove(ref(database, `grocery-items/${id}`));
+                console.log('✅ Article supprimé');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        };
 
-        async function deleteRecipe(id) {
-            recipes = recipes.filter(r => r.id !== id);
-            await saveData();
-            renderRecipes();
-        }
+        window.deleteRecipe = async function(id) {
+            try {
+                await remove(ref(database, `grocery-recipes/${id}`));
+                console.log('✅ Recette supprimée');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        };
 
-        async function addIngredientsToList(recipeId) {
+        window.addIngredientsToList = async function(recipeId) {
             const recipe = recipes.find(r => r.id === recipeId);
             if (!recipe) return;
 
-            recipe.ingredients.forEach(ingredient => {
+            for (const ingredient of recipe.ingredients) {
                 const item = {
                     id: Date.now() + Math.random(),
                     name: ingredient,
@@ -744,13 +756,16 @@
                     purchasedAt: null,
                     fromRecipe: recipe.name
                 };
-                items.push(item);
-            });
+                
+                try {
+                    await set(ref(database, `grocery-items/${item.id}`), item);
+                } catch (error) {
+                    console.error('❌ Erreur:', error);
+                }
+            }
 
-            await saveData();
-            renderItems();
             switchTab('liste');
-        }
+        };
 
         function renderItems() {
             const coldZone = items.filter(i => i.zone === 'froid');
@@ -820,7 +835,7 @@
             `).join('');
         }
 
-        function switchTab(tab) {
+        window.switchTab = function(tab) {
             activeTab = tab;
             
             const tabs = document.querySelectorAll('.tab');
@@ -843,42 +858,15 @@
                 document.getElementById('listeTab').classList.add('hidden');
                 document.getElementById('recettesTab').classList.remove('hidden');
             }
-        }
-
-        let isSaving = false;
-        let lastSaveTime = 0;
-        setInterval(async () => {
-            const timeSinceLastSave = Date.now() - lastSaveTime;
-            if (!isSaving && timeSinceLastSave > 2000) {
-                await loadData();
-            }
-        }, 5000);
+        };
 
         document.getElementById('userNameInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') setUserName();
+            if (e.key === 'Enter') window.setUserName();
         });
 
         document.getElementById('newItem').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addItem();
+            if (e.key === 'Enter') window.addItem();
         });
     </script>
-
-    <!-- Firebase (facultatif - utilisé uniquement en dehors de Claude.ai) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
-            authDomain: "liste-de-course-b82b2.firebaseapp.com",
-            projectId: "liste-de-course-b82b2",
-            storageBucket: "liste-de-course-b82b2.firebasestorage.app",
-            messagingSenderId: "539699514303",
-            appId: "1:539699514303:web:6202aa05293adf07952f0a",
-            measurementId: "G-1BTQBQLFV0"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        console.log('🔥 Firebase initialisé');
-    </script>
+</body>
+</html>
