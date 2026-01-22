@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Courses Doux</title>
     <style>
+        @font-face {
+            font-family: 'Benz Grotesk';
+            src: url('Benz Grotesk.ttf') format('truetype');
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,10 +17,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            font-family: 'Benz Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+            background: #c8cede;
             min-height: 100vh;
             padding: 1rem;
+        }
+
+        p {
+            font-family: 'Andale Mono', monospace;
         }
 
         .container {
@@ -42,10 +51,7 @@
         .welcome-title {
             font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #2a432a;
             margin-bottom: 0.5rem;
             text-align: center;
         }
@@ -69,14 +75,14 @@
 
         .input:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            border-color: #255825;
+            box-shadow: 0 0 0 4px rgba(37, 88, 37, 0.1);
         }
 
         .btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+            background: #2a432a;
             color: white;
             border: none;
             border-radius: 12px;
@@ -89,6 +95,7 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: #1a1f1a;
         }
 
         .header {
@@ -119,7 +126,7 @@
         }
 
         .title-accent {
-            color: #4f46e5;
+            color: #255825;
         }
 
         .user-greeting {
@@ -128,14 +135,14 @@
         }
 
         .user-name {
-            color: #4f46e5;
+            color: #255825;
             font-weight: 600;
         }
 
         .tabs {
             display: flex;
             gap: 0.5rem;
-            background: #f3f4f6;
+            background: #e2e8f0;
             padding: 0.5rem;
             border-radius: 12px;
             margin-bottom: 1.5rem;
@@ -146,7 +153,7 @@
             padding: 0.75rem 1.5rem;
             border: none;
             background: transparent;
-            color: #6b7280;
+            color: #4b5563;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -154,12 +161,12 @@
         }
 
         .tab:hover {
-            color: #374151;
+            color: #1f2937;
         }
 
         .tab.active {
             background: white;
-            color: #4f46e5;
+            color: #255825;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
@@ -171,7 +178,7 @@
         .input-main {
             flex: 1;
             padding: 1rem 1.25rem;
-            background: #f9fafb;
+            background: #f1f5f9;
             border: 2px solid transparent;
             border-radius: 12px;
             font-size: 1.125rem;
@@ -180,24 +187,24 @@
 
         .input-main:focus {
             outline: none;
-            border-color: #4f46e5;
+            border-color: #255825;
             background: white;
         }
 
         .btn-primary {
             padding: 1rem 2rem;
-            background: #4f46e5;
+            background: #255825;
             color: white;
             border: none;
             border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 14px 0 rgba(37, 88, 37, 0.3);
         }
 
         .btn-primary:hover {
-            background: #4338ca;
+            background: #1a3e1a;
             transform: translateY(-1px);
         }
 
@@ -283,19 +290,19 @@
         }
 
         .item-cold {
-            background: #eff6ff;
-        }
-
-        .item-cold:hover {
             background: #dbeafe;
         }
 
+        .item-cold:hover {
+            background: #bfdbfe;
+        }
+
         .item-dry {
-            background: #fffbeb;
+            background: #fef3c7;
         }
 
         .item-dry:hover {
-            background: #fef3c7;
+            background: #fde68a;
         }
 
         .item-purchased {
@@ -350,8 +357,8 @@
 
         .recipe-badge {
             font-size: 0.75rem;
-            background: #f3e8ff;
-            color: #a855f7;
+            background: #dcfce7;
+            color: #255825;
             padding: 0.25rem 0.5rem;
             border-radius: 999px;
             margin-left: 0.5rem;
@@ -404,8 +411,8 @@
         }
 
         .recipe-card {
-            background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
-            border: 2px solid #f3e8ff;
+            background: #dcfce7;
+            border: 2px solid #bbf7d0;
             border-radius: 16px;
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -449,13 +456,13 @@
             padding: 0.5rem 0.75rem;
             border-radius: 999px;
             font-size: 0.875rem;
-            border: 1px solid #e9d5ff;
+            border: 1px solid #bbf7d0;
         }
 
         .btn-add-ingredients {
             width: 100%;
             padding: 0.75rem;
-            background: #4f46e5;
+            background: #255825;
             color: white;
             border: none;
             border-radius: 12px;
@@ -465,7 +472,7 @@
         }
 
         .btn-add-ingredients:hover {
-            background: #4338ca;
+            background: #1a3e1a;
         }
 
         .hidden {
@@ -503,7 +510,7 @@
         <div class="header">
             <div class="header-top">
                 <div>
-                    <h1 class="app-title">Mes Courses <span class="title-accent">Doux</span></h1>
+                    <h1 class="app-title">Les Courses <span class="title-accent">de Janvier</span></h1>
                     <p class="user-greeting">Bonjour, <span class="user-name" id="userName">@User</span> 👋</p>
                 </div>
                 
