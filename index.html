@@ -625,12 +625,15 @@
         }
 
         async function saveData() {
+            isSaving = true;
             try {
                 await window.storage.set('grocery-items', JSON.stringify(items), true);
                 await window.storage.set('grocery-recipes', JSON.stringify(recipes), true);
             } catch (error) {
                 console.error('Erreur lors de la sauvegarde:', error);
                 alert('Erreur lors de la sauvegarde. Vos modifications peuvent ne pas être enregistrées.');
+            } finally {
+                isSaving = false;
             }
         }
 
@@ -839,8 +842,11 @@
         }
 
         // Auto-refresh pour voir les changements des autres utilisateurs
+        let isSaving = false;
         setInterval(async () => {
-            await loadData();
+            if (!isSaving) {
+                await loadData();
+            }
         }, 5000); // Rafraîchit toutes les 5 secondes
 
         // Enter key support
