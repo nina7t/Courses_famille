@@ -603,19 +603,22 @@
         // Functions
         async function loadData() {
             try {
+                console.log('🔄 Chargement des données...');
                 // Charger les articles
                 const itemsResult = await window.storage.get('grocery-items', true);
                 if (itemsResult && itemsResult.value) {
                     items = JSON.parse(itemsResult.value);
+                    console.log('📦 Articles chargés:', items.length);
                 }
 
                 // Charger les recettes
                 const recipesResult = await window.storage.get('grocery-recipes', true);
                 if (recipesResult && recipesResult.value) {
                     recipes = JSON.parse(recipesResult.value);
+                    console.log('🍳 Recettes chargées:', recipes.length);
                 }
             } catch (error) {
-                console.log('Première utilisation ou erreur:', error);
+                console.log('ℹ️ Première utilisation ou erreur:', error);
                 items = [];
                 recipes = [];
             }
@@ -626,11 +629,14 @@
 
         async function saveData() {
             isSaving = true;
+            lastSaveTime = Date.now();
             try {
+                console.log('💾 Sauvegarde en cours...', {items: items.length, recipes: recipes.length});
                 await window.storage.set('grocery-items', JSON.stringify(items), true);
                 await window.storage.set('grocery-recipes', JSON.stringify(recipes), true);
+                console.log('✅ Sauvegarde réussie!');
             } catch (error) {
-                console.error('Erreur lors de la sauvegarde:', error);
+                console.error('❌ Erreur lors de la sauvegarde:', error);
                 alert('Erreur lors de la sauvegarde. Vos modifications peuvent ne pas être enregistrées.');
             } finally {
                 isSaving = false;
@@ -843,8 +849,11 @@
 
         // Auto-refresh pour voir les changements des autres utilisateurs
         let isSaving = false;
+        let lastSaveTime = 0;
         setInterval(async () => {
-            if (!isSaving) {
+            // Ne pas rafraîchir si sauvegarde récente (moins de 2 secondes)
+            const timeSinceLastSave = Date.now() - lastSaveTime;
+            if (!isSaving && timeSinceLastSave > 2000) {
                 await loadData();
             }
         }, 5000); // Rafraîchit toutes les 5 secondes
