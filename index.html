@@ -139,6 +139,12 @@
             font-weight: 600;
         }
 
+        .sync-status {
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 0.25rem;
+        }
+
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -479,6 +485,12 @@
             display: none;
         }
 
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
         @media (max-width: 768px) {
             .zones-grid {
                 grid-template-columns: 1fr;
@@ -512,6 +524,7 @@
                 <div>
                     <h1 class="app-title">Les Courses <span class="title-accent">de Janvier</span></h1>
                     <p class="user-greeting">Bonjour, <span class="user-name" id="userName">@User</span> 👋</p>
+                    <p class="sync-status">🌐 Données synchronisées avec toute la famille</p>
                 </div>
                 
                 <div class="tabs">
@@ -546,7 +559,9 @@
                         <p class="zone-count" id="coldCount">0 article(s)</p>
                     </div>
                 </div>
-                <div id="coldItems" class="items-list"></div>
+                <div id="coldItems" class="items-list">
+                    <p class="loading">Chargement...</p>
+                </div>
             </div>
 
             <div class="zone-card zone-dry">
@@ -557,14 +572,18 @@
                         <p class="zone-count" id="dryCount">0 article(s)</p>
                     </div>
                 </div>
-                <div id="dryItems" class="items-list"></div>
+                <div id="dryItems" class="items-list">
+                    <p class="loading">Chargement...</p>
+                </div>
             </div>
         </div>
 
         <!-- Recettes Tab -->
         <div id="recettesTab" class="recipes-section hidden">
             <h2 class="recipes-title">👨‍🍳 Recettes de la Semaine</h2>
-            <div id="recipesList"></div>
+            <div id="recipesList">
+                <p class="loading">Chargement...</p>
+            </div>
         </div>
     </div>
 
@@ -582,20 +601,37 @@
         loadData();
 
         // Functions
-        function loadData() {
-            const savedItems = localStorage.getItem('grocery-items');
-            const savedRecipes = localStorage.getItem('grocery-recipes');
-            
-            if (savedItems) items = JSON.parse(savedItems);
-            if (savedRecipes) recipes = JSON.parse(savedRecipes);
+        async function loadData() {
+            try {
+                // Charger les articles
+                const itemsResult = await window.storage.get('grocery-items', true);
+                if (itemsResult && itemsResult.value) {
+                    items = JSON.parse(itemsResult.value);
+                }
+
+                // Charger les recettes
+                const recipesResult = await window.storage.get('grocery-recipes', true);
+                if (recipesResult && recipesResult.value) {
+                    recipes = JSON.parse(recipesResult.value);
+                }
+            } catch (error) {
+                console.log('Première utilisation ou erreur:', error);
+                items = [];
+                recipes = [];
+            }
             
             renderItems();
             renderRecipes();
         }
 
-        function saveData() {
-            localStorage.setItem('grocery-items', JSON.stringify(items));
-            localStorage.setItem('grocery-recipes', JSON.stringify(recipes));
+        async function saveData() {
+            try {
+                await window.storage.set('grocery-items', JSON.stringify(items), true);
+                await window.storage.set('grocery-recipes', JSON.stringify(recipes), true);
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde:', error);
+                alert('Erreur lors de la sauvegarde. Vos modifications peuvent ne pas être enregistrées.');
+            }
         }
 
         function setUserName() {
@@ -615,7 +651,7 @@
             return 'placard';
         }
 
-        function addItem() {
+        async function addItem() {
             const input = document.getElementById('newItem');
             const itemName = input.value.trim();
             
@@ -634,11 +670,11 @@
 
             items.push(item);
             input.value = '';
-            saveData();
+            await saveData();
             renderItems();
         }
 
-        function addRecipe() {
+        async function addRecipe() {
             const nameInput = document.getElementById('recipeName');
             const ingredientsInput = document.getElementById('recipeIngredients');
             
@@ -658,34 +694,34 @@
             recipes.push(recipe);
             nameInput.value = '';
             ingredientsInput.value = '';
-            saveData();
+            await saveData();
             renderRecipes();
         }
 
-        function togglePurchased(id) {
+        async function togglePurchased(id) {
             const item = items.find(i => i.id === id);
             if (item) {
                 item.purchased = !item.purchased;
                 item.purchasedBy = item.purchased ? userName : null;
                 item.purchasedAt = item.purchased ? new Date().toLocaleString('fr-FR') : null;
-                saveData();
+                await saveData();
                 renderItems();
             }
         }
 
-        function deleteItem(id) {
+        async function deleteItem(id) {
             items = items.filter(i => i.id !== id);
-            saveData();
+            await saveData();
             renderItems();
         }
 
-        function deleteRecipe(id) {
+        async function deleteRecipe(id) {
             recipes = recipes.filter(r => r.id !== id);
-            saveData();
+            await saveData();
             renderRecipes();
         }
 
-        function addIngredientsToList(recipeId) {
+        async function addIngredientsToList(recipeId) {
             const recipe = recipes.find(r => r.id === recipeId);
             if (!recipe) return;
 
@@ -704,7 +740,7 @@
                 items.push(item);
             });
 
-            saveData();
+            await saveData();
             renderItems();
             switchTab('liste');
         }
@@ -780,12 +816,10 @@
         function switchTab(tab) {
             activeTab = tab;
             
-            // Update tab buttons
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Show/hide forms and content
             if (tab === 'liste') {
                 document.getElementById('addItemForm').classList.remove('hidden');
                 document.getElementById('addRecipeForm').classList.add('hidden');
@@ -798,6 +832,11 @@
                 document.getElementById('recettesTab').classList.remove('hidden');
             }
         }
+
+        // Auto-refresh pour voir les changements des autres utilisateurs
+        setInterval(async () => {
+            await loadData();
+        }, 5000); // Rafraîchit toutes les 5 secondes
 
         // Enter key support
         document.getElementById('userNameInput').addEventListener('keypress', (e) => {
