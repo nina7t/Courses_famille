@@ -587,15 +587,14 @@
         </div>
     </div>
 
-    <!-- Firebase -->
+    <!-- Firebase FIRESTORE (pas Realtime Database) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
             authDomain: "liste-de-course-b82b2.firebaseapp.com",
-            databaseURL: "https://liste-de-course-b82b2-default-rtdb.firebaseio.com",
             projectId: "liste-de-course-b82b2",
             storageBucket: "liste-de-course-b82b2.firebasestorage.app",
             messagingSenderId: "539699514303",
@@ -604,8 +603,8 @@
         };
         
         const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        console.log('🔥 Firebase initialisé');
+        const db = getFirestore(app);
+        console.log('🔥 Firebase Firestore initialisé');
 
         // Variables globales
         let items = [];
@@ -616,23 +615,32 @@
         const coldItems = ['lait', 'beurre', 'fromage', 'yaourt', 'crème', 'viande', 'poisson', 'jambon', 'saumon', 'poulet', 'boeuf', 'porc', 'légumes frais', 'salade', 'tomate', 'concombre', 'carotte', 'fruits frais', 'pomme', 'orange', 'banane', 'raisin', 'fraise'];
         const dryItems = ['oeufs', 'oeuf', 'pâtes', 'riz', 'farine', 'sucre', 'sel', 'poivre', 'huile', 'vinaigre', 'conserve', 'thon', 'céréales', 'pain', 'biscuit', 'chocolat', 'café', 'thé', 'sauce', 'épices', 'miel', 'confiture'];
 
-        // Écouter les changements en temps réel
-        const itemsRef = ref(database, 'grocery-items');
-        const recipesRef = ref(database, 'grocery-recipes');
+        // Écouter les changements en temps réel avec Firestore
+        const itemsQuery = query(collection(db, 'grocery-items'), orderBy('timestamp', 'desc'));
+        const recipesQuery = query(collection(db, 'grocery-recipes'), orderBy('timestamp', 'desc'));
 
-        onValue(itemsRef, (snapshot) => {
-            const data = snapshot.val();
-            items = data ? Object.values(data) : [];
+        onSnapshot(itemsQuery, (snapshot) => {
+            items = [];
+            snapshot.forEach((doc) => {
+                items.push({ id: doc.id, ...doc.data() });
+            });
             console.log('📦 Articles mis à jour:', items.length);
             renderItems();
             document.getElementById('syncStatus').textContent = '🌐 Synchronisé en temps réel';
+        }, (error) => {
+            console.error('❌ Erreur connexion items:', error);
+            document.getElementById('syncStatus').textContent = '❌ Erreur de connexion';
         });
 
-        onValue(recipesRef, (snapshot) => {
-            const data = snapshot.val();
-            recipes = data ? Object.values(data) : [];
+        onSnapshot(recipesQuery, (snapshot) => {
+            recipes = [];
+            snapshot.forEach((doc) => {
+                recipes.push({ id: doc.id, ...doc.data() });
+            });
             console.log('🍳 Recettes mises à jour:', recipes.length);
             renderRecipes();
+        }, (error) => {
+            console.error('❌ Erreur connexion recettes:', error);
         });
 
         window.setUserName = function() {
@@ -659,23 +667,23 @@
             if (!itemName || !userName) return;
 
             const item = {
-                id: Date.now(),
                 name: itemName,
                 zone: determineZone(itemName),
                 addedBy: userName,
-                timestamp: new Date().toLocaleString('fr-FR'),
+                timestamp: new Date(),
+                timestampDisplay: new Date().toLocaleString('fr-FR'),
                 purchased: false,
                 purchasedBy: null,
                 purchasedAt: null
             };
 
             try {
-                await set(ref(database, `grocery-items/${item.id}`), item);
+                await addDoc(collection(db, 'grocery-items'), item);
                 input.value = '';
                 console.log('✅ Article ajouté');
             } catch (error) {
                 console.error('❌ Erreur:', error);
-                alert('Erreur lors de l\'ajout');
+                alert('Erreur lors de l\'ajout: ' + error.message);
             }
         };
 
@@ -689,33 +697,35 @@
             if (!name || !ingredients) return;
 
             const recipe = {
-                id: Date.now(),
                 name: name,
                 ingredients: ingredients.split(',').map(i => i.trim()).filter(i => i),
                 addedBy: userName,
-                timestamp: new Date().toLocaleString('fr-FR')
+                timestamp: new Date(),
+                timestampDisplay: new Date().toLocaleString('fr-FR')
             };
 
             try {
-                await set(ref(database, `grocery-recipes/${recipe.id}`), recipe);
+                await addDoc(collection(db, 'grocery-recipes'), recipe);
                 nameInput.value = '';
                 ingredientsInput.value = '';
                 console.log('✅ Recette ajoutée');
             } catch (error) {
                 console.error('❌ Erreur:', error);
-                alert('Erreur lors de l\'ajout');
+                alert('Erreur lors de l\'ajout: ' + error.message);
             }
         };
 
         window.togglePurchased = async function(id) {
             const item = items.find(i => i.id === id);
             if (item) {
-                item.purchased = !item.purchased;
-                item.purchasedBy = item.purchased ? userName : null;
-                item.purchasedAt = item.purchased ? new Date().toLocaleString('fr-FR') : null;
+                const newPurchasedState = !item.purchased;
                 
                 try {
-                    await set(ref(database, `grocery-items/${id}`), item);
+                    await updateDoc(doc(db, 'grocery-items', id), {
+                        purchased: newPurchasedState,
+                        purchasedBy: newPurchasedState ? userName : null,
+                        purchasedAt: newPurchasedState ? new Date().toLocaleString('fr-FR') : null
+                    });
                 } catch (error) {
                     console.error('❌ Erreur:', error);
                 }
@@ -724,7 +734,7 @@
 
         window.deleteItem = async function(id) {
             try {
-                await remove(ref(database, `grocery-items/${id}`));
+                await deleteDoc(doc(db, 'grocery-items', id));
                 console.log('✅ Article supprimé');
             } catch (error) {
                 console.error('❌ Erreur:', error);
@@ -733,7 +743,7 @@
 
         window.deleteRecipe = async function(id) {
             try {
-                await remove(ref(database, `grocery-recipes/${id}`));
+                await deleteDoc(doc(db, 'grocery-recipes', id));
                 console.log('✅ Recette supprimée');
             } catch (error) {
                 console.error('❌ Erreur:', error);
@@ -746,11 +756,11 @@
 
             for (const ingredient of recipe.ingredients) {
                 const item = {
-                    id: Date.now() + Math.random(),
                     name: ingredient,
                     zone: determineZone(ingredient),
                     addedBy: userName,
-                    timestamp: new Date().toLocaleString('fr-FR'),
+                    timestamp: new Date(),
+                    timestampDisplay: new Date().toLocaleString('fr-FR'),
                     purchased: false,
                     purchasedBy: null,
                     purchasedAt: null,
@@ -758,7 +768,7 @@
                 };
                 
                 try {
-                    await set(ref(database, `grocery-items/${item.id}`), item);
+                    await addDoc(collection(db, 'grocery-items'), item);
                 } catch (error) {
                     console.error('❌ Erreur:', error);
                 }
@@ -790,17 +800,17 @@
             return `
                 <div class="item item-${type} ${item.purchased ? 'item-purchased' : ''}">
                     <div class="item-content">
-                        <div class="checkbox ${item.purchased ? 'checkbox-checked' : ''}" onclick="togglePurchased(${item.id})"></div>
+                        <div class="checkbox ${item.purchased ? 'checkbox-checked' : ''}" onclick="togglePurchased('${item.id}')"></div>
                         <div class="item-details">
                             <p class="item-name ${item.purchased ? 'item-name-purchased' : ''}">
                                 ${item.name}
                                 ${item.fromRecipe ? `<span class="recipe-badge">🍳 ${item.fromRecipe}</span>` : ''}
                             </p>
-                            <p class="item-meta">Ajouté par ${item.addedBy} • ${item.timestamp}</p>
+                            <p class="item-meta">Ajouté par ${item.addedBy} • ${item.timestampDisplay}</p>
                             ${item.purchased ? `<p class="purchased-info">✓ Acheté par ${item.purchasedBy} le ${item.purchasedAt}</p>` : ''}
                         </div>
                     </div>
-                    <button class="btn-delete" onclick="deleteItem(${item.id})">🗑️</button>
+                    <button class="btn-delete" onclick="deleteItem('${item.id}')">🗑️</button>
                 </div>
             `;
         }
@@ -818,9 +828,9 @@
                     <div class="recipe-header">
                         <div>
                             <h3 class="recipe-name">${recipe.name}</h3>
-                            <p class="recipe-meta">Ajouté par ${recipe.addedBy} • ${recipe.timestamp}</p>
+                            <p class="recipe-meta">Ajouté par ${recipe.addedBy} • ${recipe.timestampDisplay}</p>
                         </div>
-                        <button class="btn-delete" onclick="deleteRecipe(${recipe.id})">🗑️</button>
+                        <button class="btn-delete" onclick="deleteRecipe('${recipe.id}')">🗑️</button>
                     </div>
                     <div>
                         <p class="ingredients-label">Ingrédients :</p>
@@ -828,7 +838,7 @@
                             ${recipe.ingredients.map(ing => `<span class="ingredient-tag">${ing}</span>`).join('')}
                         </div>
                     </div>
-                    <button class="btn-add-ingredients" onclick="addIngredientsToList(${recipe.id})">
+                    <button class="btn-add-ingredients" onclick="addIngredientsToList('${recipe.id}')">
                         🛒 Ajouter à la liste de courses
                     </button>
                 </div>
