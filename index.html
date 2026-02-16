@@ -455,6 +455,28 @@
             margin-bottom: 0.75rem;
         }
 
+        .inventory-inputs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .inventory-inputs>* {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .inventory-quantity-inputs {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .inventory-quantity-inputs .input-main {
+            flex: 1;
+            min-width: 60px;
+        }
+
         .zone-btn {
             flex: 1;
             padding: 0.5rem;
@@ -777,42 +799,82 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 0.5rem;
+                padding: 0.75rem;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .welcome-screen {
+                padding: 1rem;
             }
 
             .welcome-card {
-                padding: 2rem;
+                padding: 1.5rem;
+                border-radius: 16px;
             }
 
             .welcome-title {
                 font-size: 1.5rem;
             }
 
+            .welcome-subtitle {
+                font-size: 0.875rem;
+            }
+
+            .input {
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+
             .header {
-                padding: 1.5rem;
+                padding: 1rem;
                 position: relative;
                 top: auto;
+                border-radius: 16px;
+                margin-bottom: 1rem;
             }
 
             .header-top {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 1rem;
+                margin-bottom: 1rem;
             }
 
             .app-title {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
+                line-height: 1.2;
             }
 
-            .tabs {
-                width: 100%;
+            .title-accent {
+                display: block;
             }
 
-            .tab {
-                padding: 0.75rem 1rem;
+            .user-greeting {
                 font-size: 0.875rem;
             }
 
-            /* FIX PRINCIPAL: Formulaire en colonne sur mobile */
+            .sync-status {
+                font-size: 0.625rem;
+            }
+
+            /* Tabs - plus compact sur mobile */
+            .tabs {
+                width: 100%;
+                padding: 0.375rem;
+                gap: 0.375rem;
+            }
+
+            .tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+                border-radius: 6px;
+            }
+
+            /* Formulaire d'ajout - colonne sur mobile */
             .add-item-form {
                 flex-direction: column;
                 gap: 0.5rem;
@@ -820,23 +882,52 @@
 
             .input-main {
                 width: 100%;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
             }
 
             .btn-primary {
                 width: 100%;
-                padding: 0.875rem 1rem;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
             }
 
             /* Formulaire de recette */
             .add-recipe-form {
                 grid-template-columns: 1fr;
+                gap: 0.75rem;
             }
 
             .recipe-input-group {
                 flex-direction: column;
             }
 
-            /* Grid des zones */
+            /* Zone selector dans le formulaire d'inventaire */
+            .zone-selector {
+                width: 100%;
+            }
+
+            .zone-btn {
+                padding: 0.625rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+
+            /* Suggestions */
+            .suggestion-alert {
+                padding: 0.75rem;
+            }
+
+            .suggestion-list {
+                gap: 0.375rem;
+            }
+
+            .suggestion-btn,
+            .ingredient-tag {
+                padding: 0.375rem 0.625rem;
+                font-size: 0.75rem;
+            }
+
+            /* Grid des zones - une seule colonne */
             .zones-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -844,15 +935,41 @@
 
             .zone-card {
                 padding: 1rem;
+                border-radius: 16px;
+            }
+
+            .zone-header {
+                padding-bottom: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .zone-icon {
+                padding: 0.5rem;
+                font-size: 1.25rem;
             }
 
             .zone-title {
-                font-size: 1.125rem;
+                font-size: 1rem;
+            }
+
+            .zone-count {
+                font-size: 0.75rem;
             }
 
             /* Items */
             .item {
                 padding: 0.75rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .item-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .item-details {
+                flex: 1;
             }
 
             .item-name {
@@ -863,13 +980,69 @@
                 font-size: 0.6875rem;
             }
 
+            .recipe-badge {
+                font-size: 0.625rem;
+                padding: 0.125rem 0.375rem;
+                margin-left: 0.25rem;
+            }
+
+            .checkbox {
+                width: 1.125rem;
+                height: 1.125rem;
+            }
+
+            /* Quantity controls */
+            .quantity-controls {
+                gap: 0.375rem;
+            }
+
+            .btn-qty {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+
+            .qty-value {
+                font-size: 1rem;
+                min-width: 1.25rem;
+            }
+
+            .btn-delete {
+                padding: 0.375rem;
+                font-size: 0.875rem;
+            }
+
             /* Recettes */
+            .recipes-section {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+
+            .recipes-title {
+                font-size: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
+
             .recipe-card {
                 padding: 1rem;
+                border-radius: 12px;
+            }
+
+            .recipe-header {
+                flex-direction: column;
+                gap: 0.5rem;
             }
 
             .recipe-name {
-                font-size: 1.125rem;
+                font-size: 1rem;
+            }
+
+            .recipe-meta {
+                font-size: 0.6875rem;
+            }
+
+            .ingredients-label {
+                font-size: 0.75rem;
             }
 
             .ingredients-tags {
@@ -877,30 +1050,152 @@
             }
 
             .ingredient-tag {
-                font-size: 0.8125rem;
-                padding: 0.375rem 0.625rem;
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .btn-add-ingredients {
+                padding: 0.625rem;
+                font-size: 0.875rem;
+            }
+
+            /* Inventaire - filtre */
+            .zone-filter {
+                gap: 0.375rem;
+            }
+
+            .zone-filter-btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            /* Inventory form inputs - mobile */
+            .inventory-inputs {
+                flex-direction: column;
+            }
+
+            .inventory-inputs>* {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .inventory-quantity-inputs {
+                flex-wrap: wrap;
+            }
+
+            .inventory-quantity-inputs .input-main {
+                min-width: 80px;
+                flex: 1 1 calc(33.333% - 0.5rem);
+            }
+
+            /* Stock alerts */
+            .alert-text {
+                font-size: 0.6875rem;
+            }
+
+            .low-stock-alert {
+                padding: 0.5rem;
+            }
+
+            /* Import button */
+            #importBtn {
+                font-size: 0.6875rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            /* Empty states */
+            .empty-state {
+                padding: 2rem 0;
+                font-size: 0.875rem;
+            }
+
+            .loading {
+                padding: 1.5rem;
+                font-size: 0.875rem;
             }
         }
 
         /* Très petits écrans */
         @media (max-width: 360px) {
+            body {
+                padding: 0.5rem;
+            }
+
             .app-title {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
             }
 
             .welcome-title {
                 font-size: 1.25rem;
             }
 
+            .welcome-card {
+                padding: 1.25rem;
+            }
+
+            .header {
+                padding: 0.75rem;
+            }
+
+            .tab {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.6875rem;
+            }
+
             .input,
             .input-main {
-                font-size: 1rem;
+                font-size: 0.9375rem;
+                padding: 0.625rem 0.75rem;
             }
 
             .btn,
             .btn-primary {
-                font-size: 1rem;
-                padding: 0.875rem;
+                font-size: 0.9375rem;
+                padding: 0.625rem 0.75rem;
+            }
+
+            .item {
+                padding: 0.5rem;
+            }
+
+            .item-name {
+                font-size: 0.875rem;
+            }
+
+            .zone-card {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Support pour les écransavec encoche (notch) */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: max(0.75rem, env(safe-area-inset-top));
+                padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+            }
+
+            .header {
+                padding-top: max(1rem, env(safe-area-inset-top));
+            }
+        }
+
+        /* Mode paysage sur mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .welcome-screen {
+                min-height: auto;
+                padding: 1rem 0;
+            }
+
+            .welcome-card {
+                padding: 1rem;
+                max-width: 400px;
+            }
+
+            .header {
+                position: relative;
+                top: auto;
             }
         }
     </style>
@@ -961,15 +1256,15 @@
                             📦 Sec
                         </button>
                     </div>
-                    <div style="display: flex; gap: 0.75rem;">
+                    <div class="inventory-inputs">
                         <input type="text" id="newInventoryItem" class="input-main"
                             placeholder="Qu'est-ce qu'on a à la maison ?">
-                        <input type="number" id="inventoryQuantity" class="input-main" style="flex: 0 0 80px;"
-                            placeholder="Qté" value="1">
-                        <input type="number" id="inventoryThreshold" class="input-main" style="flex: 0 0 80px;"
-                            placeholder="Seuil" value="1">
-                        <input type="text" id="inventoryUnit" class="input-main" style="flex: 0 0 80px;"
-                            placeholder="Unité" value="pcs">
+                        <div class="inventory-quantity-inputs">
+                            <input type="number" id="inventoryQuantity" class="input-main" placeholder="Qté" value="1">
+                            <input type="number" id="inventoryThreshold" class="input-main" placeholder="Seuil"
+                                value="1">
+                            <input type="text" id="inventoryUnit" class="input-main" placeholder="Unité" value="pcs">
+                        </div>
                         <button class="btn-primary" onclick="addInventoryItem()">Ajouter</button>
                     </div>
                 </div>
@@ -1144,7 +1439,17 @@
             const input = document.getElementById('newItem');
             const itemName = input.value.trim();
 
-            if (!itemName || !userName) return;
+            if (!userName) {
+                alert('Veuillez entrer votre prénom d\'abord!');
+                return;
+            }
+
+            if (!itemName) {
+                input.style.borderColor = '#ef4444';
+                input.focus();
+                setTimeout(() => input.style.borderColor = '', 2000);
+                return;
+            }
 
             // Vérifier l'inventaire
             const inventoryItem = inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
@@ -1168,6 +1473,11 @@
             try {
                 await addDoc(collection(db, 'grocery-items'), item);
                 input.value = '';
+                // Feedback visuel
+                input.placeholder = '✓ Ajouté!';
+                setTimeout(() => {
+                    input.placeholder = "Qu'est-ce qu'on achète ?";
+                }, 1500);
                 console.log('✅ Article ajouté');
             } catch (error) {
                 console.error('❌ Erreur:', error);
@@ -1182,7 +1492,25 @@
             const name = nameInput.value.trim();
             const ingredients = ingredientsInput.value.trim();
 
-            if (!name || !ingredients) return;
+            // Validation avec feedback utilisateur
+            if (!userName) {
+                alert('Veuillez entrer votre prénom d\'abord!');
+                return;
+            }
+
+            if (!name) {
+                nameInput.style.borderColor = '#ef4444';
+                nameInput.focus();
+                setTimeout(() => nameInput.style.borderColor = '', 2000);
+                return;
+            }
+
+            if (!ingredients) {
+                ingredientsInput.style.borderColor = '#ef4444';
+                ingredientsInput.focus();
+                setTimeout(() => ingredientsInput.style.borderColor = '', 2000);
+                return;
+            }
 
             const recipe = {
                 name: name,
@@ -1196,6 +1524,14 @@
                 await addDoc(collection(db, 'grocery-recipes'), recipe);
                 nameInput.value = '';
                 ingredientsInput.value = '';
+                // Feedback visuel de succès
+                const btn = document.querySelector('#addRecipeForm .btn-primary');
+                btn.textContent = '✓ Ajouté!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = '+';
+                    btn.style.background = '';
+                }, 1500);
                 console.log('✅ Recette ajoutée');
             } catch (error) {
                 console.error('❌ Erreur:', error);
@@ -1614,6 +1950,14 @@
 
         document.getElementById('newItem').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.addItem();
+        });
+
+        document.getElementById('recipeName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.addRecipe();
+        });
+
+        document.getElementById('recipeIngredients').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.addRecipe();
         });
 
         document.getElementById('newInventoryItem').addEventListener('keypress', (e) => {
