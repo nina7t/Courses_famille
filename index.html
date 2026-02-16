@@ -409,6 +409,52 @@ p {
     background: rgba(239, 68, 68, 0.1);
 }
 
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-qty {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #255825;
+    transition: all 0.2s;
+}
+
+.btn-qty:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.qty-value {
+    font-weight: 700;
+    font-size: 1.125rem;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.low-stock-alert {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+}
+
+.alert-text {
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+}
+
 .empty-state {
     color: #9ca3af;
     text-align: center;
@@ -660,6 +706,7 @@ p {
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('liste')">🛒 Liste</button>
                     <button class="tab" onclick="switchTab('recettes')">👨‍🍳 Recettes</button>
+                    <button class="tab" onclick="switchTab('inventaire')">🏠 Inventaire</button>
                 </div>
             </div>
 
@@ -676,6 +723,21 @@ p {
                     <input type="text" id="recipeIngredients" class="input-main" placeholder="Ingrédients (séparés par des virgules)...">
                     <button class="btn-primary" onclick="addRecipe()">+</button>
                 </div>
+            </div>
+
+            <!-- Add Inventory Form -->
+            <div id="addInventoryForm" class="add-item-form hidden">
+                <input type="text" id="newInventoryItem" class="input-main" placeholder="Qu'est-ce qu'on a à la maison ?">
+                <input type="number" id="inventoryThreshold" class="input-main" style="flex: 0 0 100px;" placeholder="Seuil mini" value="1">
+                <button class="btn-primary" onclick="addInventoryItem()">Ajouter au stock</button>
+            </div>
+
+            <!-- Suggestions Stock -->
+            <div id="stockSuggestions" class="hidden" style="margin-top: 1rem; padding: 1rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px;">
+                <p style="font-weight: 700; color: #92400e; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    💡 Suggestions de rachat (stock bas)
+                </p>
+                <div id="suggestionsList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
             </div>
         </div>
 
@@ -715,6 +777,22 @@ p {
                 <p class="loading">Chargement...</p>
             </div>
         </div>
+
+        <!-- Inventaire Tab -->
+        <div id="inventaireTab" class="zones-grid hidden">
+            <div class="zone-card">
+                <div class="zone-header">
+                    <div class="zone-icon dry-icon">🏠</div>
+                    <div>
+                        <h2 class="zone-title">Stock Maison</h2>
+                        <p class="zone-count" id="inventoryCount">0 article(s)</p>
+                    </div>
+                </div>
+                <div id="inventoryList" class="items-list">
+                    <p class="loading">Chargement...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase FIRESTORE (pas Realtime Database) -->
@@ -739,6 +817,7 @@ p {
         // Variables globales
         let items = [];
         let recipes = [];
+        let inventory = [];
         let userName = '';
         let activeTab = 'liste';
 
@@ -748,6 +827,7 @@ p {
         // Écouter les changements en temps réel avec Firestore
         const itemsQuery = query(collection(db, 'grocery-items'), orderBy('timestamp', 'desc'));
         const recipesQuery = query(collection(db, 'grocery-recipes'), orderBy('timestamp', 'desc'));
+        const inventoryQuery = query(collection(db, 'inventory-items'), orderBy('name', 'asc'));
 
         onSnapshot(itemsQuery, (snapshot) => {
             items = [];
@@ -756,6 +836,7 @@ p {
             });
             console.log('📦 Articles mis à jour:', items.length);
             renderItems();
+            updateSuggestions();
             document.getElementById('syncStatus').textContent = '🌐 Synchronisé en temps réel';
         }, (error) => {
             console.error('❌ Erreur connexion items:', error);
@@ -771,6 +852,17 @@ p {
             renderRecipes();
         }, (error) => {
             console.error('❌ Erreur connexion recettes:', error);
+        });
+
+        onSnapshot(inventoryQuery, (snapshot) => {
+            inventory = [];
+            snapshot.forEach((doc) => {
+                inventory.push({ id: doc.id, ...doc.data() });
+            });
+            console.log('🏠 Inventaire mis à jour:', inventory.length);
+            renderInventory();
+        }, (error) => {
+            console.error('❌ Erreur connexion inventaire:', error);
         });
 
         window.setUserName = function() {
@@ -795,6 +887,14 @@ p {
             const itemName = input.value.trim();
             
             if (!itemName || !userName) return;
+
+            // Vérifier l'inventaire
+            const inventoryItem = inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
+            if (inventoryItem && inventoryItem.quantity > inventoryItem.threshold) {
+                if (!confirm(`Vous avez déjà ${inventoryItem.quantity} "${itemName}" en stock (seuil: ${inventoryItem.threshold}). Ajouter quand même ?`)) {
+                    return;
+                }
+            }
 
             const item = {
                 name: itemName,
@@ -875,6 +975,129 @@ p {
             try {
                 await deleteDoc(doc(db, 'grocery-recipes', id));
                 console.log('✅ Recette supprimée');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        };
+
+        window.addInventoryItem = async function() {
+            const input = document.getElementById('newInventoryItem');
+            const thresholdInput = document.getElementById('inventoryThreshold');
+            const itemName = input.value.trim();
+            const threshold = parseInt(thresholdInput.value) || 1;
+            
+            if (!itemName) return;
+
+            const item = {
+                name: itemName,
+                quantity: threshold, // Start with threshold quantity by default
+                threshold: threshold,
+                zone: determineZone(itemName),
+                timestamp: new Date()
+            };
+
+            try {
+                await addDoc(collection(db, 'inventory-items'), item);
+                input.value = '';
+                console.log('✅ Article d\'inventaire ajouté');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        };
+
+        window.updateInventoryQuantity = async function(id, delta) {
+            const item = inventory.find(i => i.id === id);
+            if (item) {
+                const newQty = Math.max(0, (item.quantity || 0) + delta);
+                try {
+                    await updateDoc(doc(db, 'inventory-items', id), {
+                        quantity: newQty
+                    });
+                } catch (error) {
+                    console.error('❌ Erreur:', error);
+                }
+            }
+        };
+
+        window.deleteInventoryItem = async function(id) {
+            try {
+                await deleteDoc(doc(db, 'inventory-items', id));
+                console.log('✅ Article d\'inventaire supprimé');
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        };
+
+        function renderInventory() {
+            const container = document.getElementById('inventoryList');
+            document.getElementById('inventoryCount').textContent = inventory.length + ' article(s)';
+
+            if (inventory.length === 0) {
+                container.innerHTML = '<p class="empty-state">Aucun article en stock</p>';
+                return;
+            }
+
+            container.innerHTML = inventory.map(item => {
+                const isLow = item.quantity <= item.threshold;
+                return `
+                    <div class="item ${item.zone === 'froid' ? 'item-cold' : 'item-dry'} ${isLow ? 'low-stock-alert' : ''}">
+                        <div class="item-content">
+                            <div class="item-details">
+                                <p class="item-name">${item.name}</p>
+                                <p class="item-meta">Seuil d'alerte : ${item.threshold}</p>
+                                ${isLow ? '<p class="alert-text">⚠️ Stock bas !</p>' : ''}
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', -1)">-</button>
+                                <span class="qty-value">${item.quantity || 0}</span>
+                                <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', 1)">+</button>
+                            </div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteInventoryItem('${item.id}')">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+
+            updateSuggestions();
+        }
+
+        function updateSuggestions() {
+            const suggestionsContainer = document.getElementById('stockSuggestions');
+            const suggestionsList = document.getElementById('suggestionsList');
+            
+            // Only show suggestions that aren't already in the shopping list
+            const lowStockItems = inventory.filter(inv => 
+                inv.quantity <= inv.threshold && 
+                !items.some(item => !item.purchased && item.name.toLowerCase() === inv.name.toLowerCase())
+            );
+
+            if (lowStockItems.length > 0 && activeTab === 'liste') {
+                suggestionsContainer.classList.remove('hidden');
+                suggestionsList.innerHTML = lowStockItems.map(item => `
+                    <button class="ingredient-tag" onclick="addItemFromSuggestion('${item.name}')" style="cursor: pointer; hover: background: #fef3c7;">
+                        + ${item.name} (${item.quantity})
+                    </button>
+                `).join('');
+            } else {
+                suggestionsContainer.classList.add('hidden');
+            }
+        }
+
+        window.addItemFromSuggestion = async function(itemName) {
+            const item = {
+                name: itemName,
+                zone: determineZone(itemName),
+                addedBy: 'Système (Stock Bas)',
+                timestamp: new Date(),
+                timestampDisplay: new Date().toLocaleString('fr-FR'),
+                purchased: false,
+                purchasedBy: null,
+                purchasedAt: null
+            };
+
+            try {
+                await addDoc(collection(db, 'grocery-items'), item);
+                console.log('✅ Suggestion ajoutée');
             } catch (error) {
                 console.error('❌ Erreur:', error);
             }
@@ -982,22 +1205,39 @@ p {
             tabs.forEach(t => {
                 t.classList.remove('active');
                 if ((tab === 'liste' && t.textContent.includes('Liste')) ||
-                    (tab === 'recettes' && t.textContent.includes('Recettes'))) {
+                    (tab === 'recettes' && t.textContent.includes('Recettes')) ||
+                    (tab === 'inventaire' && t.textContent.includes('Inventaire'))) {
                     t.classList.add('active');
                 }
             });
             
+            const addItemForm = document.getElementById('addItemForm');
+            const addRecipeForm = document.getElementById('addRecipeForm');
+            const addInventoryForm = document.getElementById('addInventoryForm');
+            const listeTab = document.getElementById('listeTab');
+            const recettesTab = document.getElementById('recettesTab');
+            const inventaireTab = document.getElementById('inventaireTab');
+
+            // Reset visibility
+            addItemForm.classList.add('hidden');
+            addRecipeForm.classList.add('hidden');
+            addInventoryForm.classList.add('hidden');
+            listeTab.classList.add('hidden');
+            recettesTab.classList.add('hidden');
+            inventaireTab.classList.add('hidden');
+
             if (tab === 'liste') {
-                document.getElementById('addItemForm').classList.remove('hidden');
-                document.getElementById('addRecipeForm').classList.add('hidden');
-                document.getElementById('listeTab').classList.remove('hidden');
-                document.getElementById('recettesTab').classList.add('hidden');
-            } else {
-                document.getElementById('addItemForm').classList.add('hidden');
-                document.getElementById('addRecipeForm').classList.remove('hidden');
-                document.getElementById('listeTab').classList.add('hidden');
-                document.getElementById('recettesTab').classList.remove('hidden');
+                addItemForm.classList.remove('hidden');
+                listeTab.classList.remove('hidden');
+            } else if (tab === 'recettes') {
+                addRecipeForm.classList.remove('hidden');
+                recettesTab.classList.remove('hidden');
+            } else if (tab === 'inventaire') {
+                addInventoryForm.classList.remove('hidden');
+                inventaireTab.classList.remove('hidden');
             }
+
+            updateSuggestions();
         };
 
         document.getElementById('userNameInput').addEventListener('keypress', (e) => {
@@ -1007,6 +1247,15 @@ p {
         document.getElementById('newItem').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.addItem();
         });
+
+        document.getElementById('newInventoryItem').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.addInventoryItem();
+        });
+
+        document.getElementById('inventoryThreshold').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.addInventoryItem();
+        });
     </script>
+    
 </body>
 </html>
