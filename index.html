@@ -1257,13 +1257,25 @@
                         </button>
                     </div>
                     <div class="inventory-inputs">
-                        <input type="text" id="newInventoryItem" class="input-main"
-                            placeholder="Qu'est-ce qu'on a à la maison ?">
+                        <input type="text" id="newInventoryItem" class="input-main" placeholder="Nom de l'article...">
                         <div class="inventory-quantity-inputs">
                             <input type="number" id="inventoryQuantity" class="input-main" placeholder="Qté" value="1">
                             <input type="number" id="inventoryThreshold" class="input-main" placeholder="Seuil"
                                 value="1">
-                            <input type="text" id="inventoryUnit" class="input-main" placeholder="Unité" value="pcs">
+                            <select id="inventoryUnit" class="input-main unit-select">
+                                <option value="pcs">pcs</option>
+                                <option value="L">Litre(s)</option>
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="ml">ml</option>
+                                <option value="bouteille">bouteille(s)</option>
+                                <option value="boîte">boîte(s)</option>
+                                <option value="pot">pot(s)</option>
+                                <option value="sachet">sachet(s)</option>
+                                <option value="paquet">paquet(s)</option>
+                                <option value="rouleau">rouleau(x)</option>
+                                <option value="barquette">barquette(s)</option>
+                            </select>
                         </div>
                         <button class="btn-primary" onclick="addInventoryItem()">Ajouter</button>
                     </div>
@@ -1578,12 +1590,12 @@
             const input = document.getElementById('newInventoryItem');
             const thresholdInput = document.getElementById('inventoryThreshold');
             const quantityInput = document.getElementById('inventoryQuantity');
-            const unitInput = document.getElementById('inventoryUnit');
+            const unitSelect = document.getElementById('inventoryUnit');
 
             const itemName = input.value.trim();
             const threshold = parseInt(thresholdInput.value) || 1;
             const quantity = parseInt(quantityInput.value) || threshold;
-            const unit = unitInput.value.trim() || 'pcs';
+            const unit = unitSelect.value;
 
             if (!userName) {
                 alert('Veuillez entrer votre prénom d\'abord!');
@@ -1612,12 +1624,12 @@
                 // Reset values
                 quantityInput.value = '1';
                 thresholdInput.value = '1';
-                unitInput.value = 'pcs';
+                unitSelect.value = 'pcs';
 
                 // Feedback visuel
                 input.placeholder = '✓ Ajouté!';
                 setTimeout(() => {
-                    input.placeholder = "Qu'est-ce qu'on a à la maison ?";
+                    input.placeholder = "Nom de l'article...";
                 }, 1500);
                 console.log('✅ Article d\'inventaire ajouté');
             } catch (error) {
@@ -1716,10 +1728,21 @@
                 }
             }
 
-            btn.classList.add('hidden');
-            alert('✅ Inventaire initial importé avec succès !');
-        };
 
+
+            // Forcer le rafraîchissement de l'inventaire
+            setTimeout(() => {
+                // Recharger depuis Firebase
+                getDocs(inventoryQuery).then((snapshot) => {
+                    inventory = [];
+                    snapshot.forEach((doc) => {
+                        inventory.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderInventory();
+                });
+                alert('✅ Inventaire initial importé avec succès !');
+            }, 1000);
+        };
         function renderInventory() {
             const container = document.getElementById('inventoryList');
             document.getElementById('inventoryCount').textContent = inventory.length + ' article(s)';
