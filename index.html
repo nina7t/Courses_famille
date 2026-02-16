@@ -1791,6 +1791,8 @@
 
         // Ajouter automatiquement au stock quand un article est acheté
         async function addToInventoryFromPurchase(item) {
+            console.log('📥 Ajout au stock:', item.name);
+
             // Vérifier si l'article existe déjà dans l'inventaire
             const existingItem = inventory.find(i =>
                 i.name.toLowerCase() === item.name.toLowerCase()
@@ -1798,9 +1800,12 @@
 
             if (existingItem) {
                 // Augmenter la quantité
+                const newQty = (existingItem.quantity || 0) + 1;
                 await updateDoc(doc(db, 'inventory-items', existingItem.id), {
-                    quantity: (existingItem.quantity || 0) + 1
+                    quantity: newQty
                 });
+                console.log('✅ Quantité mise à jour:', newQty);
+                alert(`📦 "${item.name}" ajouté au stock (${newQty})`);
             } else {
                 // Créer un nouvel article dans l'inventaire
                 await addDoc(collection(db, 'inventory-items'), {
@@ -1812,6 +1817,8 @@
                     category: item.category || detectCategory(item.name),
                     timestamp: new Date()
                 });
+                console.log('✅ Nouvel article créé dans le stock');
+                alert(`📦 "${item.name}" ajouté au stock (1)`);
             }
         }
 
