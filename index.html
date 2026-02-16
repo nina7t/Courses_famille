@@ -1339,7 +1339,7 @@
                         <h2 class="zone-title">Stock Maison</h2>
                         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
                             <p class="zone-count" id="inventoryCount">0 article(s)</p>
-                            <button id="importBtn" class="recipe-badge" style="border: none; cursor: pointer;"
+                            <button id="importBtn" class="recipe-badge hidden" style="border: none; cursor: pointer;"
                                 onclick="importInitialInventory()">📥 Importer liste initiale</button>
                         </div>
                     </div>
@@ -1425,7 +1425,14 @@
                 inventory.push({ id: doc.id, ...doc.data() });
             });
             console.log('🏠 Inventaire mis à jour:', inventory.length);
-            renderInventory();
+
+            // Auto-import si inventaire vide
+            if (inventory.length === 0) {
+                console.log('📥 Inventaire vide, lancement de l\'import...');
+                importInitialInventory();
+            } else {
+                renderInventory();
+            }
         }, (error) => {
             console.error('❌ Erreur connexion inventaire:', error);
         });
