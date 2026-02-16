@@ -179,6 +179,7 @@
         /* FIX: Formulaire d'ajout avec width 100% */
         .add-item-form {
             display: flex;
+            flex-direction: column;
             gap: 0.75rem;
             width: 100%;
         }
@@ -195,7 +196,7 @@
             background: #f1f5f9;
             border: 2px solid transparent;
             border-radius: 12px;
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 500;
         }
 
@@ -1378,28 +1379,27 @@
             <div id="addItemForm" class="add-item-form">
                 <div class="category-selector" id="categorySelector">
                     <button type="button" class="category-btn active" data-category="autre"
-                        onclick="selectCategory('autre')">📦 Autre</button>
+                        onclick="selectCategory('autre')">📦</button>
                     <button type="button" class="category-btn" data-category="fruits-legumes"
-                        onclick="selectCategory('fruits-legumes')">🍎 Fruits/Légumes</button>
+                        onclick="selectCategory('fruits-legumes')">🍎</button>
                     <button type="button" class="category-btn" data-category="viandes-poissons"
-                        onclick="selectCategory('viandes-poissons')">🥩 Viandes/Poissons</button>
+                        onclick="selectCategory('viandes-poissons')">🥩</button>
                     <button type="button" class="category-btn" data-category="produits-laitiers"
-                        onclick="selectCategory('produits-laitiers')">🧈 Produits laitiers</button>
+                        onclick="selectCategory('produits-laitiers')">🧈</button>
                     <button type="button" class="category-btn" data-category="boulangerie"
-                        onclick="selectCategory('boulangerie')">🍞 Boulangerie</button>
+                        onclick="selectCategory('boulangerie')">🍞</button>
                     <button type="button" class="category-btn" data-category="boissons"
-                        onclick="selectCategory('boissons')">🥤 Boissons</button>
+                        onclick="selectCategory('boissons')">🥤</button>
                     <button type="button" class="category-btn" data-category="epicerie"
-                        onclick="selectCategory('epicerie')">🍝 Épicerie</button>
+                        onclick="selectCategory('epicerie')">🍝</button>
                     <button type="button" class="category-btn" data-category="surgeles"
-                        onclick="selectCategory('surgeles')">🧊 Surgelés</button>
+                        onclick="selectCategory('surgeles')">🧊</button>
                     <button type="button" class="category-btn" data-category="hygiene-maison"
-                        onclick="selectCategory('hygiene-maison')">🧹 Hygiène/Maison</button>
+                        onclick="selectCategory('hygiene-maison')">🧹</button>
                 </div>
-                <div style="display: flex; gap: 0.75rem; width: 100%;">
-                    <input type="text" id="newItem" class="input-main" placeholder="Qu'est-ce qu'on achète ?"
-                        style="flex: 1;">
-                    <button class="btn-primary" onclick="addItem()">Ajouter</button>
+                <div style="display: flex; gap: 0.5rem; width: 100%;">
+                    <input type="text" id="newItem" class="input-main" placeholder="Ajouter..." style="flex: 1;">
+                    <button class="btn-primary" onclick="addItem()" style="padding: 0.75rem 1rem;">+</button>
                 </div>
             </div>
 
@@ -1704,9 +1704,9 @@
                 await addDoc(collection(db, 'grocery-items'), item);
                 input.value = '';
                 // Feedback visuel
-                input.placeholder = '✓ Ajouté!';
+                input.placeholder = '✓!';
                 setTimeout(() => {
-                    input.placeholder = "Qu'est-ce qu'on achète ?";
+                    input.placeholder = "Ajouter...";
                 }, 1500);
                 console.log('✅ Article ajouté');
             } catch (error) {
@@ -1780,11 +1780,42 @@
                         purchasedBy: newPurchasedState ? userName : null,
                         purchasedAt: newPurchasedState ? new Date().toLocaleString('fr-FR') : null
                     });
+
+                    // Si l'article est coché comme acheté, l'ajouter au stock
+                    if (newPurchasedState) {
+                        await addToInventoryFromPurchase(item);
+                    }
                 } catch (error) {
                     console.error('❌ Erreur:', error);
                 }
             }
         };
+
+        // Ajouter automatiquement au stock quand un article est acheté
+        async function addToInventoryFromPurchase(item) {
+            // Vérifier si l'article existe déjà dans l'inventaire
+            const existingItem = inventory.find(i =>
+                i.name.toLowerCase() === item.name.toLowerCase()
+            );
+
+            if (existingItem) {
+                // Augmenter la quantité
+                await updateDoc(doc(db, 'inventory-items', existingItem.id), {
+                    quantity: (existingItem.quantity || 0) + 1
+                });
+            } else {
+                // Créer un nouvel article dans l'inventaire
+                await addDoc(collection(db, 'inventory-items'), {
+                    name: item.name,
+                    quantity: 1,
+                    threshold: 1,
+                    unit: 'pcs',
+                    zone: item.zone || determineZone(item.name),
+                    category: item.category || detectCategory(item.name),
+                    timestamp: new Date()
+                });
+            }
+        }
 
         window.deleteItem = async function (id) {
             try {
