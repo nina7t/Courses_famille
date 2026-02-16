@@ -1990,6 +1990,9 @@
                 alert('✅ Inventaire initial importé avec succès !');
             }, 1000);
         };
+        // Articles non-vitaux (toujours OK même si stock bas)
+        const nonVitalItems = ['thé', 'the', 'café', 'cafe', 'tisane', 'infusion'];
+
         function renderInventory() {
             const container = document.getElementById('inventoryList');
             document.getElementById('inventoryCount').textContent = inventory.length + ' article(s)';
@@ -2007,10 +2010,15 @@
                 return;
             }
 
+            // Vérifier si article non-vital
+            function isNonVital(name) {
+                return nonVitalItems.some(item => name.toLowerCase().includes(item));
+            }
+
             // Séparer en catégories
-            const lowStock = filteredInventory.filter(item => item.quantity <= item.threshold);
-            const goodStock = filteredInventory.filter(item => item.quantity > item.threshold);
-            const emptyStock = filteredInventory.filter(item => item.quantity === 0);
+            const lowStock = filteredInventory.filter(item => item.quantity <= item.threshold && !isNonVital(item.name));
+            const goodStock = filteredInventory.filter(item => item.quantity > item.threshold || isNonVital(item.name));
+            const emptyStock = filteredInventory.filter(item => item.quantity === 0 && !isNonVital(item.name));
 
             let html = '';
 
