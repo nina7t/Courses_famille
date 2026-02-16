@@ -1357,18 +1357,8 @@
     </style>
 </head>
 <body>
-    <!-- Welcome Screen -->
-    <div id="welcomeScreen" class="welcome-screen">
-        <div class="welcome-card">
-            <h2 class="welcome-title">Bienvenue dans la liste familiale</h2>
-            <p class="welcome-subtitle">Entrez votre prénom</p>
-            <input type="text" id="userNameInput" class="input" placeholder="Votre prénom">
-            <button class="btn" onclick="setUserName()">C'est parti !</button>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div id="mainApp" class="container hidden">
+    <!-- Main App (no welcome screen) -->
+    <div id="mainApp" class="container">
         <div class="header">
             <div class="header-top">
                 <div>
@@ -1562,7 +1552,7 @@
         let items = [];
         let recipes = [];
         let inventory = [];
-        let userName = '';
+        let userName = 'Moi';
         let activeTab = 'liste';
         let selectedCategory = 'autre';
 
@@ -1663,15 +1653,9 @@
             console.error('❌ Erreur connexion inventaire:', error);
         });
 
-        window.setUserName = function () {
-            const input = document.getElementById('userNameInput').value.trim();
-            if (input) {
-                userName = input;
-                document.getElementById('userName').textContent = '@' + userName;
-                document.getElementById('welcomeScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-            }
-        };
+        // Auto-afficher l'app directement
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('userName').textContent = '@' + userName;
 
         function determineZone(itemName) {
             const lowerName = itemName.toLowerCase();
@@ -2231,10 +2215,6 @@
                 fraisBtn.classList.remove('active-sec');
             }
         };
-
-        document.getElementById('userNameInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') window.setUserName();
-        });
 
         document.getElementById('newItem').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.addItem();
