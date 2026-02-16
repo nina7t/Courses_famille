@@ -630,6 +630,162 @@
             color: #6b7280;
         }
 
+        /* Category badges */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .category-fruits-legumes {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .category-viandes-poissons {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .category-produits-laitiers {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .category-boulangerie {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .category-boissons {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-epicerie {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .category-surgeles {
+            background: #cffafe;
+            color: #155e75;
+        }
+
+        .category-hygiene-maison {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .category-autre {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Category selector in form */
+        .category-selector {
+            display: flex;
+            gap: 0.375rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.375rem 0.625rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Mobile responsive for category selector */
+        @media (max-width: 768px) {
+            .category-selector {
+                gap: 0.25rem;
+            }
+
+            .category-btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.625rem;
+            }
+        }
+
+        .category-btn:hover {
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
+
+        .category-btn.active {
+            border-color: currentColor;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-btn.active[data-category="fruits-legumes"] {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+
+        .category-btn.active[data-category="viandes-poissons"] {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .category-btn.active[data-category="produits-laitiers"] {
+            background: #fef9c3;
+            border-color: #eab308;
+            color: #854d0e;
+        }
+
+        .category-btn.active[data-category="boulangerie"] {
+            background: #fed7aa;
+            border-color: #f97316;
+            color: #9a3412;
+        }
+
+        .category-btn.active[data-category="boissons"] {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .category-btn.active[data-category="epicerie"] {
+            background: #ffedd5;
+            border-color: #fb923c;
+            color: #9a3412;
+        }
+
+        .category-btn.active[data-category="surgeles"] {
+            background: #cffafe;
+            border-color: #06b6d4;
+            color: #155e75;
+        }
+
+        .category-btn.active[data-category="hygiene-maison"] {
+            background: #f3e8ff;
+            border-color: #a855f7;
+            color: #6b21a8;
+        }
+
+        .category-btn.active[data-category="autre"] {
+            background: #f1f5f9;
+            border-color: #64748b;
+            color: #475569;
+        }
+
         .purchased-info {
             font-size: 0.75rem;
             color: #10b981;
@@ -1230,8 +1386,31 @@
 
             <!-- Add Item Form -->
             <div id="addItemForm" class="add-item-form">
-                <input type="text" id="newItem" class="input-main" placeholder="Qu'est-ce qu'on achète ?">
-                <button class="btn-primary" onclick="addItem()">Ajouter</button>
+                <div class="category-selector" id="categorySelector">
+                    <button type="button" class="category-btn active" data-category="autre"
+                        onclick="selectCategory('autre')">📦 Autre</button>
+                    <button type="button" class="category-btn" data-category="fruits-legumes"
+                        onclick="selectCategory('fruits-legumes')">🍎 Fruits/Légumes</button>
+                    <button type="button" class="category-btn" data-category="viandes-poissons"
+                        onclick="selectCategory('viandes-poissons')">🥩 Viandes/Poissons</button>
+                    <button type="button" class="category-btn" data-category="produits-laitiers"
+                        onclick="selectCategory('produits-laitiers')">🧈 Produits laitiers</button>
+                    <button type="button" class="category-btn" data-category="boulangerie"
+                        onclick="selectCategory('boulangerie')">🍞 Boulangerie</button>
+                    <button type="button" class="category-btn" data-category="boissons"
+                        onclick="selectCategory('boissons')">🥤 Boissons</button>
+                    <button type="button" class="category-btn" data-category="epicerie"
+                        onclick="selectCategory('epicerie')">🍝 Épicerie</button>
+                    <button type="button" class="category-btn" data-category="surgeles"
+                        onclick="selectCategory('surgeles')">🧊 Surgelés</button>
+                    <button type="button" class="category-btn" data-category="hygiene-maison"
+                        onclick="selectCategory('hygiene-maison')">🧹 Hygiène/Maison</button>
+                </div>
+                <div style="display: flex; gap: 0.75rem; width: 100%;">
+                    <input type="text" id="newItem" class="input-main" placeholder="Qu'est-ce qu'on achète ?"
+                        style="flex: 1;">
+                    <button class="btn-primary" onclick="addItem()">Ajouter</button>
+                </div>
             </div>
 
             <!-- Add Recipe Form -->
@@ -1385,6 +1564,53 @@
         let inventory = [];
         let userName = '';
         let activeTab = 'liste';
+        let selectedCategory = 'autre';
+
+        // Catégories avec leurs mots-clés pour détection automatique
+        const categoryKeywords = {
+            'fruits-legumes': ['pomme', 'banane', 'orange', 'fraise', 'raisin', 'tomate', 'salade', 'légume', 'carotte', 'oignon', 'patate', 'poireau', 'brocoli', 'poivron', 'concombre', 'aubergine', 'courgette', 'fruits', 'abricot', 'pêche', 'prune', 'cerise', 'melon', 'pastèque', 'kiwi', 'citron', 'mandarine', 'noix', 'amande', 'noisette'],
+            'viandes-poissons': ['viande', 'poulet', 'boeuf', 'porc', 'agneau', 'poisson', 'saumon', 'thon', 'cabillaud', 'merlan', 'jambon', 'saucisse', 'steak', 'côtelette', 'escalope', 'dinde', 'veau', 'lapin', 'crevette', 'moule', 'huître', 'crabe', 'langoustine', 'sardine', 'anchois', 'hareng'],
+            'produits-laitiers': ['lait', 'fromage', 'beurre', 'yaourt', 'crème', 'oeuf', 'oeufs', 'yaourt', 'fromage blanc', 'petit suisse', 'mascarpone', 'mozzarella', 'comté', 'gruyère', 'emmental', 'roquefort', 'chèvre', 'bleu', 'saint-nectaire', 'tomme', 'ricotta', 'feta'],
+            'boulangerie': ['pain', 'baguette', 'croissant', 'pain au chocolat', 'éclair', 'tarte', 'brioche', 'biscotte', 'pain de mie', 'galette', 'crêpe', 'gâteau', 'madeleine', 'cookie', 'muffin', 'cake', 'pain aux raisins'],
+            'boissons': ['eau', 'jus', 'soda', 'café', 'thé', 'vin', 'bière', 'sirop', 'lait', 'chocolate', 'smoothie', 'limonade', 'cola', 'citronnade', 'tonic', 'schweppes', 'cappuccino', 'expresso'],
+            'epicerie': ['pâtes', 'riz', 'farine', 'sucre', 'sel', 'huile', 'vinaigre', 'sauce', 'conserve', 'thon', 'sardine', 'haricot', 'lentille', 'pois', 'épicerie', 'épice', 'bouillon', 'cube', 'poudre', 'chocolate', 'céréale', 'muesli', 'flocon', 'poudre', 'levure'],
+            'surgeles': ['surgelé', 'glace', 'pizza', 'poisson surgelé', 'legume surgelé', 'frites', 'chips', 'stick', 'bâtonnet', 'barre glacée', 'sorbet'],
+            'hygiene-maison': ['savon', 'shampooing', 'dentifrice', 'brosse à dents', 'papier', 'toinette', 'lessive', 'adoucissant', 'nettoyant', 'désinfectant', 'spray', 'éponge', 'sac poubelle', 'rouleau', 'coton', 'compresse', 'bandage', 'doliprane', 'médicament']
+        };
+
+        const categoryIcons = {
+            'fruits-legumes': '🍎',
+            'viandes-poissons': '🥩',
+            'produits-laitiers': '🧈',
+            'boulangerie': '🍞',
+            'boissons': '🥤',
+            'epicerie': '🍝',
+            'surgeles': '🧊',
+            'hygiene-maison': '🧹',
+            'autre': '📦'
+        };
+
+        // Fonction pour détecter automatiquement la catégorie
+        function detectCategory(itemName) {
+            const lowerName = itemName.toLowerCase();
+            for (const [category, keywords] of Object.entries(categoryKeywords)) {
+                if (keywords.some(keyword => lowerName.includes(keyword))) {
+                    return category;
+                }
+            }
+            return 'autre';
+        }
+
+        // Fonction pour sélectionner une catégorie
+        window.selectCategory = function (category) {
+            selectedCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                }
+            });
+        };
 
         const coldItems = ['lait', 'beurre', 'fromage', 'yaourt', 'crème', 'viande', 'poisson', 'jambon', 'saumon', 'poulet', 'boeuf', 'porc', 'légumes frais', 'salade', 'tomate', 'concombre', 'carotte', 'fruits frais', 'pomme', 'orange', 'banane', 'raisin', 'fraise'];
         const dryItems = ['oeufs', 'oeuf', 'pâtes', 'riz', 'farine', 'sucre', 'sel', 'poivre', 'huile', 'vinaigre', 'conserve', 'thon', 'céréales', 'pain', 'biscuit', 'chocolat', 'café', 'thé', 'sauce', 'épices', 'miel', 'confiture'];
@@ -1481,6 +1707,7 @@
             const item = {
                 name: itemName,
                 zone: determineZone(itemName),
+                category: selectedCategory,
                 addedBy: userName,
                 timestamp: new Date(),
                 timestampDisplay: new Date().toLocaleString('fr-FR'),
@@ -1880,6 +2107,9 @@
         }
 
         function createItemHTML(item, type) {
+            const categoryBadge = item.category && item.category !== 'autre'
+                ? `<span class="category-badge category-${item.category}">${categoryIcons[item.category] || '📦'} ${item.category.replace('-', ' ')}</span>`
+                : '';
             return `
                 <div class="item item-${type} ${item.purchased ? 'item-purchased' : ''}">
                     <div class="item-content">
@@ -1888,6 +2118,7 @@
                             <p class="item-name ${item.purchased ? 'item-name-purchased' : ''}">
                                 ${item.name}
                                 ${item.fromRecipe ? `<span class="recipe-badge">🍳 ${item.fromRecipe}</span>` : ''}
+                                ${categoryBadge}
                             </p>
                             <p class="item-meta">Ajouté par ${item.addedBy} • ${item.timestampDisplay}</p>
                             ${item.purchased ? `<p class="purchased-info">✓ Acheté par ${item.purchasedBy} le ${item.purchasedAt}</p>` : ''}
