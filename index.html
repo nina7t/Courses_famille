@@ -6,680 +6,903 @@
     <title>Liste de courses - bourogne</title>
     <style>
         @font-face {
-    font-family: 'Benz Grotesk';
-    src: url('Benz Grotesk.ttf') format('truetype');
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Benz Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
-    background: #c8cede;
-    min-height: 100vh;
-    padding: 1rem;
-}
-
-p {
-    font-family: 'Andale Mono', monospace;
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.welcome-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    padding: 3rem;
-    max-width: 500px;
-    width: 100%;
-}
-
-.welcome-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #2a432a;
-    margin-bottom: 0.5rem;
-    text-align: center;
-}
-
-.welcome-subtitle {
-    color: #6b7280;
-    font-size: 1.125rem;
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.input {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 1.125rem;
-    transition: all 0.2s;
-    margin-bottom: 1rem;
-}
-
-.input:focus {
-    outline: none;
-    border-color: #255825;
-    box-shadow: 0 0 0 4px rgba(37, 88, 37, 0.1);
-}
-
-.btn {
-    width: 100%;
-    padding: 1rem;
-    background: #2a432a;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.125rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    background-color: #1a1f1a;
-}
-
-.header {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    position: sticky;
-    top: 1rem;
-    z-index: 10;
-}
-
-.header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.app-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #111827;
-}
-
-.title-accent {
-    color: #255825;
-}
-
-.user-greeting {
-    color: #6b7280;
-    font-weight: 500;
-}
-
-.user-name {
-    color: #255825;
-    font-weight: 600;
-}
-
-.sync-status {
-    font-size: 0.75rem;
-    color: #10b981;
-    margin-top: 0.25rem;
-}
-
-.tabs {
-    display: flex;
-    gap: 0.5rem;
-    background: #e2e8f0;
-    padding: 0.5rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-}
-
-.tab {
-    flex: 1;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background: transparent;
-    color: #4b5563;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.tab:hover {
-    color: #1f2937;
-}
-
-.tab.active {
-    background: white;
-    color: #255825;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* FIX: Formulaire d'ajout avec width 100% */
-.add-item-form {
-    display: flex;
-    gap: 0.75rem;
-    width: 100%;
-}
-
-.add-item-form > * {
-    min-width: 0; /* Empêche les débordements */
-}
-
-.input-main {
-    flex: 1;
-    min-width: 0;
-    padding: 1rem 1.25rem;
-    background: #f1f5f9;
-    border: 2px solid transparent;
-    border-radius: 12px;
-    font-size: 1.125rem;
-    font-weight: 500;
-}
-
-.input-main:focus {
-    outline: none;
-    border-color: #255825;
-    background: white;
-}
-
-.btn-primary {
-    padding: 1rem 2rem;
-    background: #255825;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px 0 rgba(37, 88, 37, 0.3);
-    white-space: nowrap; /* Empêche le texte de se couper */
-}
-
-.btn-primary:hover {
-    background: #1a3e1a;
-    transform: translateY(-1px);
-}
-
-.add-recipe-form {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1rem;
-}
-
-.recipe-input-group {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.zones-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 1.5rem;
-}
-
-.zone-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-}
-
-.zone-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid;
-    margin-bottom: 1rem;
-}
-
-.zone-cold .zone-header {
-    border-color: #dbeafe;
-}
-
-.zone-dry .zone-header {
-    border-color: #fef3c7;
-}
-
-.zone-icon {
-    padding: 0.75rem;
-    border-radius: 12px;
-    font-size: 1.5rem;
-}
-
-.cold-icon {
-    background: #dbeafe;
-}
-
-.dry-icon {
-    background: #fef3c7;
-}
-
-.zone-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #1f2937;
-}
-
-.zone-count {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 1rem;
-    border-radius: 12px;
-    transition: all 0.2s;
-}
-
-.item-cold {
-    background: #dbeafe;
-}
-
-.item-cold:hover {
-    background: #bfdbfe;
-}
-
-.item-dry {
-    background: #fef3c7;
-}
-
-.item-dry:hover {
-    background: #fde68a;
-}
-
-.item-purchased {
-    background: #d1fae5;
-    opacity: 0.6;
-}
-
-.item-content {
-    display: flex;
-    gap: 0.75rem;
-    flex: 1;
-}
-
-.checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
-    border: 2px solid #d1d5db;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 0.25rem;
-    flex-shrink: 0;
-}
-
-.checkbox-checked {
-    background: #10b981;
-    border-color: #10b981;
-    position: relative;
-}
-
-.checkbox-checked::after {
-    content: '✓';
-    color: white;
-    position: absolute;
-    top: -3px;
-    left: 2px;
-    font-size: 0.875rem;
-}
-
-.item-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.item-name {
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.25rem;
-    word-wrap: break-word;
-}
-
-.item-name-purchased {
-    text-decoration: line-through;
-    color: #6b7280;
-}
-
-.recipe-badge {
-    font-size: 0.75rem;
-    background: #dcfce7;
-    color: #255825;
-    padding: 0.25rem 0.5rem;
-    border-radius: 999px;
-    margin-left: 0.5rem;
-    white-space: nowrap;
-}
-
-.item-meta {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.purchased-info {
-    font-size: 0.75rem;
-    color: #10b981;
-    font-weight: 600;
-    margin-top: 0.25rem;
-}
-
-.btn-delete {
-    color: #ef4444;
-    background: transparent;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-
-.btn-delete:hover {
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.btn-qty {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.125rem;
-    font-weight: bold;
-    color: #255825;
-    transition: all 0.2s;
-}
-
-.btn-qty:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-}
-
-.qty-value {
-    font-weight: 700;
-    font-size: 1.125rem;
-    min-width: 1.5rem;
-    text-align: center;
-}
-
-.low-stock-alert {
-    background: #fee2e2;
-    border: 2px solid #ef4444;
-}
-
-.alert-text {
-    color: #ef4444;
-    font-size: 0.75rem;
-    font-weight: 700;
-    margin-top: 0.25rem;
-}
-
-.empty-state {
-    color: #9ca3af;
-    text-align: center;
-    padding: 3rem 0;
-}
-
-.recipes-section {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-}
-
-.recipes-title {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #1f2937;
-    margin-bottom: 1rem;
-}
-
-.recipe-card {
-    background: #dcfce7;
-    border: 2px solid #bbf7d0;
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.recipe-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.recipe-name {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #1f2937;
-}
-
-.recipe-meta {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-top: 0.25rem;
-}
-
-.ingredients-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.ingredients-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.ingredient-tag {
-    background: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    border: 1px solid #bbf7d0;
-}
-
-.btn-add-ingredients {
-    width: 100%;
-    padding: 0.75rem;
-    background: #255825;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-add-ingredients:hover {
-    background: #1a3e1a;
-}
-
-.hidden {
-    display: none;
-}
-
-.loading {
-    text-align: center;
-    color: #6b7280;
-    padding: 2rem;
-}
-
-/* ========================================
+            font-family: 'Benz Grotesk';
+            src: url('Benz Grotesk.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Benz Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
+            background: #c8cede;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        p {
+            font-family: 'Andale Mono', monospace;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2a432a;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .welcome-subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #255825;
+            box-shadow: 0 0 0 4px rgba(37, 88, 37, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: #2a432a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: #1a1f1a;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .title-accent {
+            color: #255825;
+        }
+
+        .user-greeting {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .user-name {
+            color: #255825;
+            font-weight: 600;
+        }
+
+        .sync-status {
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 0.25rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            padding: 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #4b5563;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #1f2937;
+        }
+
+        .tab.active {
+            background: white;
+            color: #255825;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* FIX: Formulaire d'ajout avec width 100% */
+        .add-item-form {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .add-item-form>* {
+            min-width: 0;
+            /* Empêche les débordements */
+        }
+
+        .input-main {
+            flex: 1;
+            min-width: 0;
+            padding: 1rem 1.25rem;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .input-main:focus {
+            outline: none;
+            border-color: #255825;
+            background: white;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: #255825;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px 0 rgba(37, 88, 37, 0.3);
+            white-space: nowrap;
+            /* Empêche le texte de se couper */
+        }
+
+        .btn-primary:hover {
+            background: #1a3e1a;
+            transform: translateY(-1px);
+        }
+
+        .add-recipe-form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+        }
+
+        .recipe-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .zones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .zone-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .zone-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid;
+            margin-bottom: 1rem;
+        }
+
+        .zone-fresh .zone-header {
+            border-color: #d1fae5;
+        }
+
+        .zone-fresh-icon {
+            background: #d1fae5;
+        }
+
+        .zone-sec .zone-header {
+            border-color: #fef3c7;
+        }
+
+        .zone-sec-icon {
+            background: #fef3c7;
+        }
+
+        .zone-icon {
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+        }
+
+        .cold-icon {
+            background: #dbeafe;
+        }
+
+        .dry-icon {
+            background: #fef3c7;
+        }
+
+        .zone-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .zone-count {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .item-fresh {
+            background: #d1fae5;
+        }
+
+        .item-fresh:hover {
+            background: #a7f3d0;
+        }
+
+        .item-sec {
+            background: #fef3c7;
+        }
+
+        .item-sec:hover {
+            background: #fde68a;
+        }
+
+        .item-purchased {
+            background: #d1fae5;
+            opacity: 0.6;
+        }
+
+        /* Styles pour les suggestions intelligentes */
+        .suggestion-alert {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        .suggestion-urgent {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+
+        .suggestion-warning {
+            background: #fff7ed;
+            border: 2px solid #f97316;
+        }
+
+        .suggestion-info {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .suggestion-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .suggestion-urgent .suggestion-header {
+            color: #dc2626;
+        }
+
+        .suggestion-warning .suggestion-header {
+            color: #ea580c;
+        }
+
+        .suggestion-info .suggestion-header {
+            color: #2563eb;
+        }
+
+        .suggestion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .suggestion-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .suggestion-urgent .suggestion-btn {
+            background: white;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .suggestion-warning .suggestion-btn {
+            background: white;
+            color: #ea580c;
+            border: 1px solid #fdba74;
+        }
+
+        .suggestion-info .suggestion-btn {
+            background: white;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+
+        .suggestion-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-btn .priority-badge {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+
+        .suggestion-urgent .priority-badge {
+            background: #dc2626;
+            color: white;
+        }
+
+        .suggestion-warning .priority-badge {
+            background: #f97316;
+            color: white;
+        }
+
+        /* Zone selector in form */
+        .zone-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .zone-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .zone-btn:hover {
+            border-color: #9ca3af;
+        }
+
+        .zone-btn.active-fresh {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .zone-btn.active-sec {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        /* Inventory zone filter */
+        .zone-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .zone-filter-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .zone-filter-btn.active {
+            background: #255825;
+            color: white;
+        }
+
+        .expiry-warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #92400e;
+            margin-left: 0.5rem;
+        }
+
+        .stock-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .stock-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .stock-bar-fill.high {
+            background: #10b981;
+        }
+
+        .stock-bar-fill.medium {
+            background: #f59e0b;
+        }
+
+        .stock-bar-fill.low {
+            background: #ef4444;
+        }
+
+        .item-content {
+            display: flex;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .checkbox-checked {
+            background: #10b981;
+            border-color: #10b981;
+            position: relative;
+        }
+
+        .checkbox-checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: -3px;
+            left: 2px;
+            font-size: 0.875rem;
+        }
+
+        .item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            word-wrap: break-word;
+        }
+
+        .item-name-purchased {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+
+        .recipe-badge {
+            font-size: 0.75rem;
+            background: #dcfce7;
+            color: #255825;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            margin-left: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .purchased-info {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .btn-delete {
+            color: #ef4444;
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-qty {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #255825;
+            transition: all 0.2s;
+        }
+
+        .btn-qty:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .qty-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        .low-stock-alert {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+
+        .alert-text {
+            color: #ef4444;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+
+        .empty-state {
+            color: #9ca3af;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .recipes-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .recipes-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-card {
+            background: #dcfce7;
+            border: 2px solid #bbf7d0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .recipe-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .ingredients-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .ingredients-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ingredient-tag {
+            background: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .btn-add-ingredients {
+            width: 100%;
+            padding: 0.75rem;
+            background: #255825;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-ingredients:hover {
+            background: #1a3e1a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        /* ========================================
    RESPONSIVE MOBILE
    ======================================== */
 
-@media (max-width: 768px) {
-    body {
-        padding: 0.5rem;
-    }
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
 
-    .welcome-card {
-        padding: 2rem;
-    }
+            .welcome-card {
+                padding: 2rem;
+            }
 
-    .welcome-title {
-        font-size: 1.5rem;
-    }
+            .welcome-title {
+                font-size: 1.5rem;
+            }
 
-    .header {
-        padding: 1.5rem;
-        position: relative;
-        top: auto;
-    }
+            .header {
+                padding: 1.5rem;
+                position: relative;
+                top: auto;
+            }
 
-    .header-top {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-    .app-title {
-        font-size: 1.75rem;
-    }
+            .app-title {
+                font-size: 1.75rem;
+            }
 
-    .tabs {
-        width: 100%;
-    }
+            .tabs {
+                width: 100%;
+            }
 
-    .tab {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-    }
+            .tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
 
-    /* FIX PRINCIPAL: Formulaire en colonne sur mobile */
-    .add-item-form {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+            /* FIX PRINCIPAL: Formulaire en colonne sur mobile */
+            .add-item-form {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
 
-    .input-main {
-        width: 100%;
-    }
+            .input-main {
+                width: 100%;
+            }
 
-    .btn-primary {
-        width: 100%;
-        padding: 0.875rem 1rem;
-    }
+            .btn-primary {
+                width: 100%;
+                padding: 0.875rem 1rem;
+            }
 
-    /* Formulaire de recette */
-    .add-recipe-form {
-        grid-template-columns: 1fr;
-    }
+            /* Formulaire de recette */
+            .add-recipe-form {
+                grid-template-columns: 1fr;
+            }
 
-    .recipe-input-group {
-        flex-direction: column;
-    }
+            .recipe-input-group {
+                flex-direction: column;
+            }
 
-    /* Grid des zones */
-    .zones-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+            /* Grid des zones */
+            .zones-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
 
-    .zone-card {
-        padding: 1rem;
-    }
+            .zone-card {
+                padding: 1rem;
+            }
 
-    .zone-title {
-        font-size: 1.125rem;
-    }
+            .zone-title {
+                font-size: 1.125rem;
+            }
 
-    /* Items */
-    .item {
-        padding: 0.75rem;
-    }
+            /* Items */
+            .item {
+                padding: 0.75rem;
+            }
 
-    .item-name {
-        font-size: 0.9375rem;
-    }
+            .item-name {
+                font-size: 0.9375rem;
+            }
 
-    .item-meta {
-        font-size: 0.6875rem;
-    }
+            .item-meta {
+                font-size: 0.6875rem;
+            }
 
-    /* Recettes */
-    .recipe-card {
-        padding: 1rem;
-    }
+            /* Recettes */
+            .recipe-card {
+                padding: 1rem;
+            }
 
-    .recipe-name {
-        font-size: 1.125rem;
-    }
+            .recipe-name {
+                font-size: 1.125rem;
+            }
 
-    .ingredients-tags {
-        gap: 0.375rem;
-    }
+            .ingredients-tags {
+                gap: 0.375rem;
+            }
 
-    .ingredient-tag {
-        font-size: 0.8125rem;
-        padding: 0.375rem 0.625rem;
-    }
-}
+            .ingredient-tag {
+                font-size: 0.8125rem;
+                padding: 0.375rem 0.625rem;
+            }
+        }
 
-/* Très petits écrans */
-@media (max-width: 360px) {
-    .app-title {
-        font-size: 1.5rem;
-    }
+        /* Très petits écrans */
+        @media (max-width: 360px) {
+            .app-title {
+                font-size: 1.5rem;
+            }
 
-    .welcome-title {
-        font-size: 1.25rem;
-    }
+            .welcome-title {
+                font-size: 1.25rem;
+            }
 
-    .input, .input-main {
-        font-size: 1rem;
-    }
+            .input,
+            .input-main {
+                font-size: 1rem;
+            }
 
-    .btn, .btn-primary {
-        font-size: 1rem;
-        padding: 0.875rem;
-    }
-}
+            .btn,
+            .btn-primary {
+                font-size: 1rem;
+                padding: 0.875rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -702,7 +925,7 @@ p {
                     <p class="user-greeting">Bonjour, <span class="user-name" id="userName">@User</span> 👋</p>
                     <p class="sync-status" id="syncStatus">🔄 Connexion à Firebase...</p>
                 </div>
-                
+
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('liste')">🛒 Liste</button>
                     <button class="tab" onclick="switchTab('recettes')">👨‍🍳 Recettes</button>
@@ -720,21 +943,43 @@ p {
             <div id="addRecipeForm" class="add-recipe-form hidden">
                 <input type="text" id="recipeName" class="input-main" placeholder="Nom de la recette...">
                 <div class="recipe-input-group">
-                    <input type="text" id="recipeIngredients" class="input-main" placeholder="Ingrédients (séparés par des virgules)...">
+                    <input type="text" id="recipeIngredients" class="input-main"
+                        placeholder="Ingrédients (séparés par des virgules)...">
                     <button class="btn-primary" onclick="addRecipe()">+</button>
                 </div>
             </div>
 
             <!-- Add Inventory Form -->
-            <div id="addInventoryForm" class="add-item-form hidden">
-                <input type="text" id="newInventoryItem" class="input-main" placeholder="Qu'est-ce qu'on a à la maison ?">
-                <input type="number" id="inventoryThreshold" class="input-main" style="flex: 0 0 100px;" placeholder="Seuil mini" value="1">
-                <button class="btn-primary" onclick="addInventoryItem()">Ajouter au stock</button>
+            <div id="addInventoryForm" class="hidden">
+                <div class="add-item-form" style="flex-direction: column;">
+                    <div class="zone-selector">
+                        <button type="button" class="zone-btn active-fresh" onclick="selectInventoryZone('frais')"
+                            id="zoneFraisBtn">
+                            ❄️ Frais
+                        </button>
+                        <button type="button" class="zone-btn" onclick="selectInventoryZone('sec')" id="zoneSecBtn">
+                            📦 Sec
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <input type="text" id="newInventoryItem" class="input-main"
+                            placeholder="Qu'est-ce qu'on a à la maison ?">
+                        <input type="number" id="inventoryQuantity" class="input-main" style="flex: 0 0 80px;"
+                            placeholder="Qté" value="1">
+                        <input type="number" id="inventoryThreshold" class="input-main" style="flex: 0 0 80px;"
+                            placeholder="Seuil" value="1">
+                        <input type="text" id="inventoryUnit" class="input-main" style="flex: 0 0 80px;"
+                            placeholder="Unité" value="pcs">
+                        <button class="btn-primary" onclick="addInventoryItem()">Ajouter</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Suggestions Stock -->
-            <div id="stockSuggestions" class="hidden" style="margin-top: 1rem; padding: 1rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px;">
-                <p style="font-weight: 700; color: #92400e; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div id="stockSuggestions" class="hidden"
+                style="margin-top: 1rem; padding: 1rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px;">
+                <p
+                    style="font-weight: 700; color: #92400e; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                     💡 Suggestions de rachat (stock bas)
                 </p>
                 <div id="suggestionsList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
@@ -743,28 +988,28 @@ p {
 
         <!-- Liste Tab -->
         <div id="listeTab" class="zones-grid">
-            <div class="zone-card zone-cold">
+            <div class="zone-card zone-fresh">
                 <div class="zone-header">
-                    <div class="zone-icon cold-icon">❄️</div>
+                    <div class="zone-icon zone-fresh-icon">❄️</div>
                     <div>
-                        <h2 class="zone-title">Zone Froid</h2>
-                        <p class="zone-count" id="coldCount">0 article(s)</p>
+                        <h2 class="zone-title">Espace Frais</h2>
+                        <p class="zone-count" id="freshCount">0 article(s)</p>
                     </div>
                 </div>
-                <div id="coldItems" class="items-list">
+                <div id="freshItems" class="items-list">
                     <p class="loading">Chargement...</p>
                 </div>
             </div>
 
-            <div class="zone-card zone-dry">
+            <div class="zone-card zone-sec">
                 <div class="zone-header">
-                    <div class="zone-icon dry-icon">📦</div>
+                    <div class="zone-icon zone-sec-icon">📦</div>
                     <div>
-                        <h2 class="zone-title">Zone Placard</h2>
-                        <p class="zone-count" id="dryCount">0 article(s)</p>
+                        <h2 class="zone-title">Espace Sec</h2>
+                        <p class="zone-count" id="secCount">0 article(s)</p>
                     </div>
                 </div>
-                <div id="dryItems" class="items-list">
+                <div id="secItems" class="items-list">
                     <p class="loading">Chargement...</p>
                 </div>
             </div>
@@ -780,14 +1025,27 @@ p {
 
         <!-- Inventaire Tab -->
         <div id="inventaireTab" class="zones-grid hidden">
-            <div class="zone-card">
+            <div class="zone-card" style="grid-column: 1 / -1;">
                 <div class="zone-header">
-                    <div class="zone-icon dry-icon">🏠</div>
+                    <div class="zone-icon zone-sec-icon">🏠</div>
                     <div>
                         <h2 class="zone-title">Stock Maison</h2>
-                        <p class="zone-count" id="inventoryCount">0 article(s)</p>
+                        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <p class="zone-count" id="inventoryCount">0 article(s)</p>
+                            <button id="importBtn" class="recipe-badge" style="border: none; cursor: pointer;"
+                                onclick="importInitialInventory()">📥 Importer liste initiale</button>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Zone Filter -->
+                <div class="zone-filter">
+                    <button class="zone-filter-btn active" onclick="filterInventory('all')" id="filterAll">Tous</button>
+                    <button class="zone-filter-btn" onclick="filterInventory('frais')" id="filterFrais">❄️
+                        Frais</button>
+                    <button class="zone-filter-btn" onclick="filterInventory('sec')" id="filterSec">📦 Sec</button>
+                </div>
+
                 <div id="inventoryList" class="items-list">
                     <p class="loading">Chargement...</p>
                 </div>
@@ -799,7 +1057,7 @@ p {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyBpuW5lQFSfZmp-2pD09_LwkoMisY7VKd0",
             authDomain: "liste-de-course-b82b2.firebaseapp.com",
@@ -809,7 +1067,7 @@ p {
             appId: "1:539699514303:web:6202aa05293adf07952f0a",
             measurementId: "G-1BTQBQLFV0"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         console.log('🔥 Firebase Firestore initialisé');
@@ -865,7 +1123,7 @@ p {
             console.error('❌ Erreur connexion inventaire:', error);
         });
 
-        window.setUserName = function() {
+        window.setUserName = function () {
             const input = document.getElementById('userNameInput').value.trim();
             if (input) {
                 userName = input;
@@ -882,10 +1140,10 @@ p {
             return 'placard';
         }
 
-        window.addItem = async function() {
+        window.addItem = async function () {
             const input = document.getElementById('newItem');
             const itemName = input.value.trim();
-            
+
             if (!itemName || !userName) return;
 
             // Vérifier l'inventaire
@@ -917,13 +1175,13 @@ p {
             }
         };
 
-        window.addRecipe = async function() {
+        window.addRecipe = async function () {
             const nameInput = document.getElementById('recipeName');
             const ingredientsInput = document.getElementById('recipeIngredients');
-            
+
             const name = nameInput.value.trim();
             const ingredients = ingredientsInput.value.trim();
-            
+
             if (!name || !ingredients) return;
 
             const recipe = {
@@ -945,11 +1203,11 @@ p {
             }
         };
 
-        window.togglePurchased = async function(id) {
+        window.togglePurchased = async function (id) {
             const item = items.find(i => i.id === id);
             if (item) {
                 const newPurchasedState = !item.purchased;
-                
+
                 try {
                     await updateDoc(doc(db, 'grocery-items', id), {
                         purchased: newPurchasedState,
@@ -962,7 +1220,7 @@ p {
             }
         };
 
-        window.deleteItem = async function(id) {
+        window.deleteItem = async function (id) {
             try {
                 await deleteDoc(doc(db, 'grocery-items', id));
                 console.log('✅ Article supprimé');
@@ -971,7 +1229,7 @@ p {
             }
         };
 
-        window.deleteRecipe = async function(id) {
+        window.deleteRecipe = async function (id) {
             try {
                 await deleteDoc(doc(db, 'grocery-recipes', id));
                 console.log('✅ Recette supprimée');
@@ -980,12 +1238,12 @@ p {
             }
         };
 
-        window.addInventoryItem = async function() {
+        window.addInventoryItem = async function () {
             const input = document.getElementById('newInventoryItem');
             const thresholdInput = document.getElementById('inventoryThreshold');
             const itemName = input.value.trim();
             const threshold = parseInt(thresholdInput.value) || 1;
-            
+
             if (!itemName) return;
 
             const item = {
@@ -1005,7 +1263,7 @@ p {
             }
         };
 
-        window.updateInventoryQuantity = async function(id, delta) {
+        window.updateInventoryQuantity = async function (id, delta) {
             const item = inventory.find(i => i.id === id);
             if (item) {
                 const newQty = Math.max(0, (item.quantity || 0) + delta);
@@ -1019,7 +1277,7 @@ p {
             }
         };
 
-        window.deleteInventoryItem = async function(id) {
+        window.deleteInventoryItem = async function (id) {
             try {
                 await deleteDoc(doc(db, 'inventory-items', id));
                 console.log('✅ Article d\'inventaire supprimé');
@@ -1028,28 +1286,107 @@ p {
             }
         };
 
+        window.importInitialInventory = async function () {
+            const initialInventory = [
+                { name: "Levure boulangère", quantity: 2, threshold: 1, unit: "sachets" },
+                { name: "Sucre glace", quantity: 300, threshold: 500, unit: "g" },
+                { name: "Nesquik", quantity: 150, threshold: 350, unit: "g" },
+                { name: "Sucre en poudre blanc", quantity: 1000, threshold: 500, unit: "g" },
+                { name: "Farine", quantity: 200, threshold: 1000, unit: "g" },
+                { name: "Café moulu Arabica", quantity: 200, threshold: 200, unit: "g" },
+                { name: "Thé fraise et menthe", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Thé au thym (2 Marmottes)", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Thé thym en feuille", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Thé Celestial Fruits rouges", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Thé vert et menthe", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Amandes effilées", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Thé verveine menthe", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Beurre de cacahuètes", quantity: 1, threshold: 1, unit: "pot" },
+                { name: "Confitures rouges", quantity: 7, threshold: 2, unit: "pots" },
+                { name: "Sucre de canne", quantity: 250, threshold: 500, unit: "g" },
+                { name: "Pâte à tartiner noisette", quantity: 3, threshold: 1, unit: "pots" },
+                { name: "Jus de citron", quantity: 0, threshold: 1, unit: "bouteille" },
+                { name: "Mélange graines et raisins", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Cookies", quantity: 2, threshold: 2, unit: "pièces" },
+                { name: "Gâteaux travail (Choco/Fraise)", quantity: 2, threshold: 1, unit: "boîtes" },
+                { name: "Dattes", quantity: 2, threshold: 1, unit: "sachets" },
+                { name: "Ananas en conserve", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Mangue en tranche conserve", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Dahl de lentille (sachet midi)", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Riz façon basquaise", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Paella (sachet)", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Crousti pané végétal", quantity: 1, threshold: 1, unit: "boîte" },
+                { name: "Tartine de sarrasin", quantity: 1, threshold: 1, unit: "paquet" },
+                { name: "Mélange céréales bio / légumes secs", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Fécule bio", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Pâtes (fond)", quantity: 100, threshold: 500, unit: "g" },
+                { name: "Long riz (1 pers)", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Lentilles corail (fond)", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Lentilles bocal (2028)", quantity: 1, threshold: 1, unit: "bocal" },
+                { name: "Sirop", quantity: 1, threshold: 1, unit: "bouteille" },
+                { name: "Huile d'olive", quantity: 1, threshold: 1, unit: "bouteille" },
+                { name: "Oignon frit", quantity: 1, threshold: 1, unit: "sachet" },
+                { name: "Vinaigre balsamique", quantity: 1, threshold: 1, unit: "bouteille" },
+                { name: "Pâte à lasagne", quantity: 1, threshold: 1, unit: "paquet" },
+                { name: "Biscotte", quantity: 1, threshold: 1, unit: "paquet" },
+                { name: "Crème de soja cuisine", quantity: 0, threshold: 1, unit: "bouteille" },
+                { name: "Bouillon de légume (cubes)", quantity: 3, threshold: 6, unit: "cubes" },
+                { name: "Nouilles", quantity: 0, threshold: 1, unit: "paquet" },
+                { name: "Papier aluminium", quantity: 1, threshold: 1, unit: "rouleau" },
+                { name: "Papier sulfurisé", quantity: 0, threshold: 1, unit: "rouleau" }
+            ];
+
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true;
+            btn.textContent = "⌛ Import en cours...";
+
+            for (const item of initialInventory) {
+                const docData = {
+                    ...item,
+                    zone: 'placard', // All provided items were for dry storage
+                    timestamp: new Date()
+                };
+                try {
+                    await addDoc(collection(db, 'inventory-items'), docData);
+                } catch (error) {
+                    console.error(`❌ Erreur pour ${item.name}:`, error);
+                }
+            }
+
+            btn.classList.add('hidden');
+            alert('✅ Inventaire initial importé avec succès !');
+        };
+
         function renderInventory() {
             const container = document.getElementById('inventoryList');
             document.getElementById('inventoryCount').textContent = inventory.length + ' article(s)';
 
-            if (inventory.length === 0) {
+            // Apply filter
+            const filteredInventory = inventory.filter(item => {
+                if (currentInventoryFilter === 'all') return true;
+                if (currentInventoryFilter === 'frais') return item.zone === 'froid';
+                if (currentInventoryFilter === 'sec') return item.zone === 'placard';
+                return true;
+            });
+
+            if (filteredInventory.length === 0) {
                 container.innerHTML = '<p class="empty-state">Aucun article en stock</p>';
                 return;
             }
 
-            container.innerHTML = inventory.map(item => {
+            container.innerHTML = filteredInventory.map(item => {
                 const isLow = item.quantity <= item.threshold;
                 return `
                     <div class="item ${item.zone === 'froid' ? 'item-cold' : 'item-dry'} ${isLow ? 'low-stock-alert' : ''}">
                         <div class="item-content">
                             <div class="item-details">
                                 <p class="item-name">${item.name}</p>
-                                <p class="item-meta">Seuil d'alerte : ${item.threshold}</p>
+                                <p class="item-meta">Seuil d'alerte : ${item.threshold} ${item.unit || ''}</p>
                                 ${isLow ? '<p class="alert-text">⚠️ Stock bas !</p>' : ''}
                             </div>
                             <div class="quantity-controls">
                                 <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', -1)">-</button>
-                                <span class="qty-value">${item.quantity || 0}</span>
+                                <span class="qty-value">${item.quantity || 0} ${item.unit || ''}</span>
                                 <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', 1)">+</button>
                             </div>
                         </div>
@@ -1064,17 +1401,17 @@ p {
         function updateSuggestions() {
             const suggestionsContainer = document.getElementById('stockSuggestions');
             const suggestionsList = document.getElementById('suggestionsList');
-            
+
             // Only show suggestions that aren't already in the shopping list
-            const lowStockItems = inventory.filter(inv => 
-                inv.quantity <= inv.threshold && 
+            const lowStockItems = inventory.filter(inv =>
+                inv.quantity <= inv.threshold &&
                 !items.some(item => !item.purchased && item.name.toLowerCase() === inv.name.toLowerCase())
             );
 
             if (lowStockItems.length > 0 && activeTab === 'liste') {
                 suggestionsContainer.classList.remove('hidden');
                 suggestionsList.innerHTML = lowStockItems.map(item => `
-                    <button class="ingredient-tag" onclick="addItemFromSuggestion('${item.name}')" style="cursor: pointer; hover: background: #fef3c7;">
+<button class="ingredient-tag" onclick="addItemFromSuggestion('${item.name}')" style="cursor: pointer; background: #fff;">
                         + ${item.name} (${item.quantity})
                     </button>
                 `).join('');
@@ -1083,7 +1420,7 @@ p {
             }
         }
 
-        window.addItemFromSuggestion = async function(itemName) {
+        window.addItemFromSuggestion = async function (itemName) {
             const item = {
                 name: itemName,
                 zone: determineZone(itemName),
@@ -1103,7 +1440,7 @@ p {
             }
         };
 
-        window.addIngredientsToList = async function(recipeId) {
+        window.addIngredientsToList = async function (recipeId) {
             const recipe = recipes.find(r => r.id === recipeId);
             if (!recipe) return;
 
@@ -1119,7 +1456,7 @@ p {
                     purchasedAt: null,
                     fromRecipe: recipe.name
                 };
-                
+
                 try {
                     await addDoc(collection(db, 'grocery-items'), item);
                 } catch (error) {
@@ -1134,13 +1471,13 @@ p {
             const coldZone = items.filter(i => i.zone === 'froid');
             const dryZone = items.filter(i => i.zone === 'placard');
 
-            document.getElementById('coldCount').textContent = coldZone.length + ' article(s)';
-            document.getElementById('dryCount').textContent = dryZone.length + ' article(s)';
+            document.getElementById('freshCount').textContent = coldZone.length + ' article(s)';
+            document.getElementById('secCount').textContent = dryZone.length + ' article(s)';
 
-            const coldContainer = document.getElementById('coldItems');
-            const dryContainer = document.getElementById('dryItems');
+            const coldContainer = document.getElementById('freshItems');
+            const dryContainer = document.getElementById('secItems');
 
-            coldContainer.innerHTML = coldZone.length === 0 
+            coldContainer.innerHTML = coldZone.length === 0
                 ? '<p class="empty-state">Aucun article</p>'
                 : coldZone.map(item => createItemHTML(item, 'cold')).join('');
 
@@ -1170,7 +1507,7 @@ p {
 
         function renderRecipes() {
             const container = document.getElementById('recipesList');
-            
+
             if (recipes.length === 0) {
                 container.innerHTML = '<p class="empty-state">Aucune recette planifiée</p>';
                 return;
@@ -1198,9 +1535,9 @@ p {
             `).join('');
         }
 
-        window.switchTab = function(tab) {
+        window.switchTab = function (tab) {
             activeTab = tab;
-            
+
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(t => {
                 t.classList.remove('active');
@@ -1210,7 +1547,7 @@ p {
                     t.classList.add('active');
                 }
             });
-            
+
             const addItemForm = document.getElementById('addItemForm');
             const addRecipeForm = document.getElementById('addRecipeForm');
             const addInventoryForm = document.getElementById('addInventoryForm');
@@ -1240,6 +1577,37 @@ p {
             updateSuggestions();
         };
 
+        let currentInventoryFilter = 'all';
+
+        window.filterInventory = function (zone) {
+            currentInventoryFilter = zone;
+
+            // Update button states
+            document.querySelectorAll('.zone-filter-btn').forEach(btn => btn.classList.remove('active'));
+            if (zone === 'all') document.getElementById('filterAll').classList.add('active');
+            if (zone === 'frais') document.getElementById('filterFrais').classList.add('active');
+            if (zone === 'sec') document.getElementById('filterSec').classList.add('active');
+
+            renderInventory();
+        };
+
+        window.selectInventoryZone = function (zone) {
+            const fraisBtn = document.getElementById('zoneFraisBtn');
+            const secBtn = document.getElementById('zoneSecBtn');
+
+            if (zone === 'frais') {
+                fraisBtn.classList.add('active-fresh');
+                fraisBtn.classList.remove('active-sec');
+                secBtn.classList.remove('active-fresh');
+                secBtn.classList.remove('active-sec');
+            } else {
+                secBtn.classList.add('active-sec');
+                secBtn.classList.remove('active-fresh');
+                fraisBtn.classList.remove('active-fresh');
+                fraisBtn.classList.remove('active-sec');
+            }
+        };
+
         document.getElementById('userNameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') window.setUserName();
         });
@@ -1256,6 +1624,6 @@ p {
             if (e.key === 'Enter') window.addInventoryItem();
         });
     </script>
-    
+
 </body>
 </html>
