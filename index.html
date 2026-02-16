@@ -1995,7 +1995,7 @@
             document.getElementById('inventoryCount').textContent = inventory.length + ' article(s)';
 
             // Apply filter
-            const filteredInventory = inventory.filter(item => {
+            let filteredInventory = inventory.filter(item => {
                 if (currentInventoryFilter === 'all') return true;
                 if (currentInventoryFilter === 'frais') return item.zone === 'froid';
                 if (currentInventoryFilter === 'sec') return item.zone === 'placard';
@@ -2007,28 +2007,66 @@
                 return;
             }
 
-            container.innerHTML = filteredInventory.map(item => {
-                const isLow = item.quantity <= item.threshold;
-                return `
-                    <div class="item ${item.zone === 'froid' ? 'item-cold' : 'item-dry'} ${isLow ? 'low-stock-alert' : ''}">
-                        <div class="item-content">
-                            <div class="item-details">
-                                <p class="item-name">${item.name}</p>
-                                <p class="item-meta">Seuil d'alerte : ${item.threshold} ${item.unit || ''}</p>
-                                ${isLow ? '<p class="alert-text">⚠️ Stock bas !</p>' : ''}
-                            </div>
-                            <div class="quantity-controls">
-                                <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', -1)">-</button>
-                                <span class="qty-value">${item.quantity || 0} ${item.unit || ''}</span>
-                                <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', 1)">+</button>
-                            </div>
-                        </div>
-                        <button class="btn-delete" onclick="deleteInventoryItem('${item.id}')">🗑️</button>
+            // Séparer en catégories
+            const lowStock = filteredInventory.filter(item => item.quantity <= item.threshold);
+            const goodStock = filteredInventory.filter(item => item.quantity > item.threshold);
+            const emptyStock = filteredInventory.filter(item => item.quantity === 0);
+
+            let html = '';
+
+            // Section: Rupture (0)
+            if (emptyStock.length > 0) {
+                html += `
+                    <div class="inventory-section">
+                        <h3 class="section-title" style="color: #ef4444; margin: 1rem 0 0.5rem 0;">⚠️ Rupture (${emptyStock.length})</h3>
+                        ${emptyStock.map(item => createInventoryItemHTML(item)).join('')}
                     </div>
                 `;
-            }).join('');
+            }
 
+            // Section: Bientôt en rupture
+            if (lowStock.length > 0) {
+                html += `
+                    <div class="inventory-section">
+                        <h3 class="section-title" style="color: #f97316; margin: 1rem 0 0.5rem 0;">🔔 Bientôt en rupture (${lowStock.length})</h3>
+                        ${lowStock.map(item => createInventoryItemHTML(item)).join('')}
+                    </div>
+                `;
+            }
+
+            // Section: Stock OK
+            if (goodStock.length > 0) {
+                html += `
+                    <div class="inventory-section">
+                        <h3 class="section-title" style="color: #10b981; margin: 1rem 0 0.5rem 0;">✅ Stock OK (${goodStock.length})</h3>
+                        ${goodStock.map(item => createInventoryItemHTML(item)).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
             updateSuggestions();
+        }
+
+        function createInventoryItemHTML(item) {
+            const isLow = item.quantity <= item.threshold;
+            return `
+                <div class="item ${item.zone === 'froid' ? 'item-cold' : 'item-dry'} ${isLow ? 'low-stock-alert' : ''}">
+                    <div class="item-content">
+                        <div class="item-details">
+                            <p class="item-name">${item.name}</p>
+                            <p class="item-meta">Seuil: ${item.threshold} ${item.unit || ''}</p>
+                            ${isLow ? '<p class="alert-text">⚠️ Stock bas !</p>' : ''}
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', -1)">-</button>
+                            <span class="qty-value">${item.quantity || 0} ${item.unit || ''}</span>
+                            <button class="btn-qty" onclick="updateInventoryQuantity('${item.id}', 1)">+</button>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteInventoryItem('${item.id}')">🗑️</button>
+                </div>
+            `;
         }
 
         function updateSuggestions() {
