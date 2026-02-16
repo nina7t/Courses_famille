@@ -1577,15 +1577,31 @@
         window.addInventoryItem = async function () {
             const input = document.getElementById('newInventoryItem');
             const thresholdInput = document.getElementById('inventoryThreshold');
+            const quantityInput = document.getElementById('inventoryQuantity');
+            const unitInput = document.getElementById('inventoryUnit');
+
             const itemName = input.value.trim();
             const threshold = parseInt(thresholdInput.value) || 1;
+            const quantity = parseInt(quantityInput.value) || threshold;
+            const unit = unitInput.value.trim() || 'pcs';
 
-            if (!itemName) return;
+            if (!userName) {
+                alert('Veuillez entrer votre prénom d\'abord!');
+                return;
+            }
+
+            if (!itemName) {
+                input.style.borderColor = '#ef4444';
+                input.focus();
+                setTimeout(() => input.style.borderColor = '', 2000);
+                return;
+            }
 
             const item = {
                 name: itemName,
-                quantity: threshold, // Start with threshold quantity by default
+                quantity: quantity,
                 threshold: threshold,
+                unit: unit,
                 zone: determineZone(itemName),
                 timestamp: new Date()
             };
@@ -1593,9 +1609,20 @@
             try {
                 await addDoc(collection(db, 'inventory-items'), item);
                 input.value = '';
+                // Reset values
+                quantityInput.value = '1';
+                thresholdInput.value = '1';
+                unitInput.value = 'pcs';
+
+                // Feedback visuel
+                input.placeholder = '✓ Ajouté!';
+                setTimeout(() => {
+                    input.placeholder = "Qu'est-ce qu'on a à la maison ?";
+                }, 1500);
                 console.log('✅ Article d\'inventaire ajouté');
             } catch (error) {
                 console.error('❌ Erreur:', error);
+                alert('Erreur lors de l\'ajout: ' + error.message);
             }
         };
 
